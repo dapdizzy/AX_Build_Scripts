@@ -1,0 +1,17 @@
+SqlServer=MOW04DEV014
+SqlDatabase=MicrosoftDynamicsAX
+SqlModelDatabase=MicrosoftDynamicsAX_model
+BuildLocation=C:\AX\Build\Drop\DAXSTDR3\1.0.0.18
+ServerBinDir=C:\Program Files\Microsoft Dynamics AX\60\Server\MicrosoftDynamicsAX\bin
+LogFolder=C:\AX\Build\Drop\DAXSTDR3\1.0.0.18\Logs
+CompileAll=true
+CompileCIL=true
+AOSname=AOS60$01
+UninstallOnly=
+AOSNotOnDeployBox=false
+NoCleanOnError=
+TFSIntegration=
+TFSUrl=
+TFSLabel=
+ApplicationSourceDir=
+NoCleanOnError=true
