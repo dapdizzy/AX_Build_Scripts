@@ -1,0 +1,36 @@
+<Project DefaultTargets="Compile" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask AssemblyName="Microsoft.Dynamics.Framework.Design.BuildTasks, Version=6.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" TaskName="SetAXConfiguration" />
+  <UsingTask AssemblyName="Microsoft.Dynamics.Framework.Design.BuildTasks, Version=6.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" TaskName="ExtractReferenceProjects" />
+  <PropertyGroup>
+    <!-- Override this property if ExtractReferenceProjects should be skipped-->
+    <ExtractReferencedProjects Condition=" '$(ExtractReferencedProjects)' == '' ">true</ExtractReferencedProjects>
+  </PropertyGroup>
+  
+  <ItemGroup>
+  
+    <ProjectFiles Include="$(srcFolder)\Visual Studio Projects\$(projectsToCompile)\**\*proj"/>
+
+     </ItemGroup>
+  
+  <Target
+      Name="SetAXConfigurationTarget" >
+    <Message Text="Importing to model: $(ModelName) $(ModelPublisher)"/>
+    <Message Text="Importing to layer: $(axLayer)"/>
+    <SetAXConfiguration AXConfig="$(AXConfig)" Aol="$(axLayer)" AolCode="$(axAolCode)" ModelName="$(ModelName)" ModelPublisher="$(ModelPublisher)" SuspendProjectEvents="true"/>
+  </Target>
+
+  <Target Name="ListProjects">
+    <Message Text="List of MSBuild projects to be built:"/>
+    <Message Text="%(ProjectFiles.Filename)"/>
+  </Target>
+
+  <Target Name="ExtractReferenceProjects"  Condition="'$(ExtractReferencedProjects)' == 'true'">
+    <ExtractReferenceProjects Projects="@(ProjectFiles -> '%(Filename)')" RepositoryFolder="$(srcFolder)"/>
+  </Target>
+
+  <Target Name="Compile" DependsOnTargets="ListProjects;SetAXConfigurationTarget;ExtractReferenceProjects">
+    <MSBuild
+            Projects="@(ProjectFiles)"
+            Properties="SkipRdlGeneration=$(SkipRdlGeneration);FailOnRDLGenerationTaskErrors=false;RDLParameterLanguage=$(RDLParameterLanguage)"/>
+  </Target>
+</Project>
