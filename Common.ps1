@@ -1050,7 +1050,7 @@ function CreateSpecificXPOs([string]$xpoFileName)
                 }
                 $writer = $sysTabWriter
             }
-            elseif ($line -match 'Class: SysImportElements' -or $line -match 'Class: SysStartupCmdAOTImport') # special case for SysImportElements
+            elseif ($line -match 'Class: SysImportElements' -or $line -match 'Class: SysStartupCmdAOTImport' -or $line -match 'Class: SysStartupCmdCompilePartial')  # special case for SysImportElements
             {
                 if (!$sysClsWriter)
                 {
