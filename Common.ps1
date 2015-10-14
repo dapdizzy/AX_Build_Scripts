@@ -1320,7 +1320,8 @@ function Import-AxCode([System.IO.FileSystemInfo]$model)
         Write-InfoLog '------------------------------------------------------------------------------------------------------'
         
         # Copy AOTprco.log file into configured Client log dir
-        Copy-Item -Path (join-path (Split-Path -Parent $MyInvocation.MyCommand.Path) "AOTprco.log") -Destination $clientLogDir -Force -ErrorAction SilentlyContinue 
+        #Copy-Item -Path (join-path (Split-Path -Parent $MyInvocation.MyCommand.Path) "AOTprco.log") -Destination $clientLogDir -Force -ErrorAction SilentlyContinue 
+        Copy-PredefinedAOTprco
         
         # Run compile partial to compile just imported classes required for proper AOT import and exit after partial compilation
         $arguments = '{0} {1} -lazyclassloading -lazytableloading -StartupCmd=compilepartial -novsprojcompileall -internal=noModalBoxes' -f $compileInLayerParm,$aolParm
@@ -1415,6 +1416,14 @@ function Import-AxCode([System.IO.FileSystemInfo]$model)
     }
     
     Write-InfoLog ("Import {0} finished : {1}" -f $modelName,(Get-Date)) 
+}
+
+function Copy-PredefinedAOTprco
+{
+    # Copy AOTprco.log file into configured Client log dir
+    #Write-InfoLog ("Script startup dir: {0}" -f $script:startupDir)
+    #Write-InfoLog ("Client log dir: {0}" -f $clientLogDir)
+    Copy-Item -Path (join-path (Split-Path -Parent $script:startupDir) "AOTprco.log") -Destination $clientLogDir -Force -ErrorAction SilentlyContinue 
 }
 
 function Build-VisualStudioProjects([System.IO.FileSystemInfo]$model)

@@ -392,6 +392,9 @@ function Build-AX
 
 $ErrorActionPreference = "SilentlyContinue"
 
+# Capture Initial script path in a script scoped variable as powershell is not smart enough to provide $Myinvocation variable in a function in a references script (i.e., Common.ps1)
+$script:startupDir = $MyInvocation.MyCommand.Path
+
 Write-Host ('Invocation command path: {0}' -f $MyInvocation.MyCommand.Path)
 $commonps1Path = (join-path (Split-Path -Parent $MyInvocation.MyCommand.Path) "Common.ps1")
 Write-Host ('Common.ps1 path: {0}' -f $commonps1Path)
