@@ -1,6 +1,8 @@
 <xml>
-<type>Class</type><name>SysImportElementsr</name><path>\\Classes\SysImportElements</path>
+<type>Class</type><name>SysImportElements</name><path>\\Classes\SysImportElements</path>
 
 <type>Class</type><name>SysStartupCmdAOTImport</name><path>\\Classes\SysStartupCmdAOTImport</path>
+
+<type>Class</type><name>SysStartupCmdCompilePartial</name><path>\\Classes\SysStartupCmdCompilePartial</path>
 
 </xml>

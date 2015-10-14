@@ -308,6 +308,16 @@ function Start-AOS
 
 	while ($aos.State -ne [system.ServiceProcess.ServiceControllerStatus]::Running)
 	{
+        if ($aos.State -eq [system.ServiceProcess.ServiceControllerStatus]::Stopped)
+        {
+            # Start AOS one more time in case it stopped for some reason during the process of starting
+            Write-InfoLog ("Starting AOS")
+            $rv = $aos.StartService().ReturnValue
+            if ($rv -ne 0) {
+                Write-TerminatingErrorLog ("AOS service can't be started. Got error code {0}" -f $rv)
+            }
+        }
+        
 		if (($(get-date) - $startDateTime).get_Minutes() -gt $AOSRestartTimeout)
 		{
 			Write-TerminatingErrorLog('The AOS can not be started after {0} minutes.' -f $AOSRestartTimeout)			
@@ -1308,6 +1318,23 @@ function Import-AxCode([System.IO.FileSystemInfo]$model)
         Write-Infolog ('---------------Finished importing of system classes via Import AOT Startup CMD at {0}-----------------' -f (Get-Date))
         #Write-InfoLog $barLine
         Write-InfoLog '------------------------------------------------------------------------------------------------------'
+        
+        # Copy AOTprco.log file into configured Client log dir
+        Copy-Item -Path (join-path (Split-Path -Parent $MyInvocation.MyCommand.Path) "AOTprco.log") -Destination $clientLogDir -Force -ErrorAction SilentlyContinue 
+        
+        # Run compile partial to compile just imported classes required for proper AOT import and exit after partial compilation
+        $arguments = '{0} {1} -lazyclassloading -lazytableloading -StartupCmd=compilepartial -novsprojcompileall -internal=noModalBoxes' -f $compileInLayerParm,$aolParm
+        Write-host ("Calling CompilePartial API : {0}" -f (Get-Date)) 
+        $axProcess = Start-Process $ax32 -WorkingDirectory $clientBinDir -PassThru -WindowStyle minimized -ArgumentList $arguments -OutVariable out
+        Write-host $out
+        Write-InfoLog (" ")
+        Write-InfoLog (" ")
+        if ($axProcess.WaitForExit(60000) -eq $false)
+        {
+            $axProcess.Kill()
+            # It's fine to just kill the process here
+            #Throw ("Error: AX compile partial did not complete within {0} minutes" -f $CompileAllTimeout)
+        }
     }
     
     # Get the _sysTab.xpo filename using vicious expression
