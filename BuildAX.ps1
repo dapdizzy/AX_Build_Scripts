@@ -322,7 +322,11 @@ function Build-AX
         {
             Write-TerminatingErrorLog ("Unable to combine xpo for: {0}" -f $model.FullName)
         }
-    }      
+    }
+    
+    # Now we've got all the references downloaded to local repo and it's time to install the needed MyGet packages and register them to GAC for AX to build.
+    Create-PackagesConfig
+    Install-Packages
     
     Write-InfoLog '------------------------------------------>' 
     Write-InfoLog ('Models list: {0}' -f $models)

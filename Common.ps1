@@ -236,7 +236,7 @@ function Synchronize-AX($tableId = 0)
 	{
 		Write-ErrorLog("Error: AX synchronize did not complete within {0} minutes" -f $SyncTimeout)
 		$axProcess.Kill()
-		foreach($event in Get-EventLog Application | Where-Object {$_.Source -eq "Dynamics Server 01" -and $_.EntryType -eq "Error" -and $_.Timegenerated -gt $SynchStartTime})
+		foreach($event in Get-EventLog Application | Where-Object {$_.Source -match "Dynamics Server" -and $_.EntryType -eq "Error" -and $_.Timegenerated -gt $SynchStartTime})
 		{
 			Write-ErrorLog($event.Message.Substring($event.Message.IndexOf('[SQL Server]')+'[SQL Server]'.get_length()))
 		}	
@@ -1420,14 +1420,28 @@ function Import-AxCode([System.IO.FileSystemInfo]$model)
 
 function Create-PackagesConfig
 {
-    $packagesContent = '<?xml version="1.0" encoding="utf-8"?>' + "`n" + '<packages>' + "`n"
-    $refsFileName = gci -Path "$currentLogFolder\*" -Include "*_refs.xpo" -Name | select -f 1
-    foreach ($line in (Get-Content (join-path $currentLogFolder $refsFileName)))
-    { 
-        if ($line -match '\b(?<assemblyname>MMS\.Cloud\.Commands\.[a-zA-Z0-9._%+-]+)[ ,]+Version\=(?<version>\d+(?:\.\d+)+)\b')
-        {
-            $packagesContent += (('  <package id="{0}" version="{1}" targetFramework="net45" />' -f $matches['assemblyname'], $matches['version']) + "`n")
+    $assembliesHashSet = new-object System.Collections.Generic.HashSet[String]
+    #$packagesContent = '<?xml version="1.0" encoding="utf-8"?>' + "`n" + '<packages>' + "`n"
+    foreach ($refsFileName in (gci -Path "$currentLogFolder\*" -Include "*_refs.xpo" -Name))
+    {
+        foreach ($line in (Get-Content (join-path $currentLogFolder $refsFileName)))
+        { 
+            if ($line -match '\b(?<assemblyname>MMS\.Cloud\.Commands\.[a-zA-Z0-9._%+-]+)[ ,]+Version\=(?<version>\d+(?:\.\d+)+)\b')
+            {
+                $assemblyInfo = ('{0}:{1}' -f $matches['assemblyname'], $matches['version'])
+                if ($assembliesHashSet.Contains($assemblyInfo) -ne $true)
+                {
+                    $assembliesHashSet.Add($assemblyInfo)
+                }
+                #$packagesContent += (('  <package id="{0}" version="{1}" targetFramework="net45" />' -f $matches['assemblyname'], $matches['version']) + "`n")
+            }
         }
+    }
+    $packagesContent = '<?xml version="1.0" encoding="utf-8"?>' + "`n" + '<packages>' + "`n"
+    foreach ($assemblyInfo in $assembliesHashSet)
+    {
+        $split = $assemblyInfo.Split([char[]]':')
+        $packagesContent += (('  <package id="{0}" version="{1}" targetFramework="net45" />' -f $split[0], $split[1]) + "`n")
     }
     #| {$packagesContent += (('  <package id="{0}" version="{1}" targetFramework="net45" />' -f $matches['assemblyname'], $matches['version']) + "`n")}
     <#foreach ($line in $fileContent)
@@ -1447,6 +1461,15 @@ function Create-PackagesConfig
 #
 function Install-Packages
 {
+    # Setup NuGet for usage
+    $user = 'mmruser'
+    $pwd = 'Qwerty12345'
+    $feedSource = 'https://mediamarkt.myget.org/F/models/api/v2/'
+    $expr = ('nuget Sources Add -Name mmm -Source "{0}" -UserName {1} -Password {2}' -f $feedSource, $user, $pwd)
+    Invoke-Expression $expr
+    $feedSource = 'https://mediamarkt.myget.org/F/default/api/v2/'
+    $expr = ('nuget Sources Add -Name mmm -Source "{0}" -UserName {1} -Password {2}' -f $feedSource, $user, $pwd)
+    Invoke-Expression $expr
     # Ensure packages output directory is created
     New-Item (Join-Path $currentLogFolder 'Packages') -itemtype Directory -Force
     # Build nuget install expression
@@ -1457,15 +1480,23 @@ function Install-Packages
     #[Reflection.Assembly]::LoadWithPartialName("System.EnterpriseServices") | Out-Null
     #$publish = New-Object System.EnterpriseServices.Internal.Publish
     $gacutilExe = 'C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe'
-    $gacutilExpr = '"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe" /i "{0}"'
-    gci -Path (Join-Path $currentLogFolder Packages) -Include '*.dll' -Recurse `
-    | Select-Object -Property FullName `
-    | ForEach-Object `
+    #$gacutilExpr = '"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe" /i "{0}"'
+    
+    $dlls = gci -Path (Join-Path $currentLogFolder Packages) -Include '*.dll' -Recurse | Select-Object -Property FullName
+    ForEach ($dll in $dlls)
+    #| ForEach-Object `
     {
         <#$expr = ($gacutilExpr -f $_.FullName)
         Write-InfoLog $expr
         Invoke-Expression $expr#>
-        Start-Process $gacutilExe -ArgumentList ('/i "{0}"' -f $_.FullName)
+        $p = Start-Process $gacutilExe -ArgumentList ('/i "{0}"' -f $_.FullName) -OutVariable out -PassThru
+        if ($p.WaitForExit(5000) -ne $true)
+        {
+            Write-ErrorLog 'GacUtil was unable to complete in 5 seconds'
+            $p.Kill()
+        }
+        Write-Infolog $out
+        #Write-Infolog ('GacUtil reported: {0}' -f $out)
     }
     #$
     #Set-location "c:\Folder Path"            
