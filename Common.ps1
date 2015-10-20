@@ -1418,6 +1418,62 @@ function Import-AxCode([System.IO.FileSystemInfo]$model)
     Write-InfoLog ("Import {0} finished : {1}" -f $modelName,(Get-Date)) 
 }
 
+function Create-PackagesConfig
+{
+    $packagesContent = '<?xml version="1.0" encoding="utf-8"?>' + "`n" + '<packages>' + "`n"
+    $refsFileName = gci -Path "$currentLogFolder\*" -Include "*_refs.xpo" -Name | select -f 1
+    foreach ($line in (Get-Content (join-path $currentLogFolder $refsFileName)))
+    { 
+        if ($line -match '\b(?<assemblyname>MMS\.Cloud\.Commands\.[a-zA-Z0-9._%+-]+)[ ,]+Version\=(?<version>\d+(?:\.\d+)+)\b')
+        {
+            $packagesContent += (('  <package id="{0}" version="{1}" targetFramework="net45" />' -f $matches['assemblyname'], $matches['version']) + "`n")
+        }
+    }
+    #| {$packagesContent += (('  <package id="{0}" version="{1}" targetFramework="net45" />' -f $matches['assemblyname'], $matches['version']) + "`n")}
+    <#foreach ($line in $fileContent)
+    {
+        if ($line -match 'AssemblyDisplayName #MMS.Cloud.Commands')
+        {
+            #AssemblyDisplayName #MMS.Cloud.Commands.CMI, Version=1.0.4.0, Culture=neutral, 
+            $line -match "AssemblyDisplayName #(?<assemblyname>MMS.Cloud.Commands\.[A-Z0-9._%+-]+)\,\bVersion\=(?<version>\d+(?:\.\d+)+)\b" }
+            #@{$matches['assemblyname'] = $matches['version']}
+        }
+    }#>
+    $packagesContent += "</packages>"
+    $packagesConfigFileName = Join-Path $currentLogFolder packages.config
+    $packagesContent | Out-File -filepath $packagesConfigFileName -Encoding UTF8
+}
+
+#
+function Install-Packages
+{
+    # Ensure packages output directory is created
+    New-Item (Join-Path $currentLogFolder 'Packages') -itemtype Directory -Force
+    # Build nuget install expression
+    $nugetInstallExpr = ('nuget install "{0}" -o "{1}"' -f (Join-Path $currentLogFolder packages.config), (Join-Path $currentLogFolder Packages))
+    Invoke-Expression $nugetInstallExpr
+    # Install the assemblies themselves to GAC
+    #[System.Reflection.Assembly]::Load("System.EnterpriseServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=AMD64")
+    #[Reflection.Assembly]::LoadWithPartialName("System.EnterpriseServices") | Out-Null
+    #$publish = New-Object System.EnterpriseServices.Internal.Publish
+    $gacutilExe = 'C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe'
+    $gacutilExpr = '"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe" /i "{0}"'
+    gci -Path (Join-Path $currentLogFolder Packages) -Include '*.dll' -Recurse `
+    | Select-Object -Property FullName `
+    | ForEach-Object `
+    {
+        <#$expr = ($gacutilExpr -f $_.FullName)
+        Write-InfoLog $expr
+        Invoke-Expression $expr#>
+        Start-Process $gacutilExe -ArgumentList ('/i "{0}"' -f $_.FullName)
+    }
+    #$
+    #Set-location "c:\Folder Path"            
+    <#[System.Reflection.Assembly]::Load("System.EnterpriseServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")            
+    $publish = New-Object System.EnterpriseServices.Internal.Publish            
+    $publish.GacInstall("c:\Folder Path\DLL.dll")#>
+}
+
 function Copy-PredefinedAOTprco
 {
     # Copy AOTprco.log file into configured Client log dir
