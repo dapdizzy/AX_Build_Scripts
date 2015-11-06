@@ -2188,14 +2188,52 @@ function GET-TFS (
         ('VCS', 'Microsoft.TeamFoundation.VersionControl.Client', 'Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer')
     )
 
+    #$cred = Get-Credential
+
+    <#$netCred = New-Object System.Net.NetworkCredential($cred.UserNamed, $cred.Password)
+    [BasicAuthCredential]$basicCred = New-Object Microsoft.TeamFoundation.Client.BasicAuthCredential($netCred)
+    [TfsClientCredentials]$tfsCred = New-Object Microsoft.TeamFoundation.Client.TfsClientCredentials($basicCred)
+
+    [psobject] $tfs = New-Object 'Microsoft.TeamFoundation.Client.TeamFoundationServer' ($serverName, $tfsCred)
+
+    
+    #>
     [psobject] $tfs = [Microsoft.TeamFoundation.Client.TeamFoundationServerFactory]::GetServer($serverName)
        foreach ($entry in $propertiesToAdd) {
         $scriptBlock = '
-            [System.Reflection.Assembly]::LoadWithPartialName("{0}") > $null
+            $asm = [System.Reflection.Assembly]::LoadWithPartialName("{0}")
+            Write-Host $asm.ToString()
+            $t = $asm.GetType("Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer")
+            Write-Host $t.ToString() -foregroundcolor cyan
             $this.GetService([{1}])
         ' -f $entry[1],$entry[2]
         $tfs | add-member scriptproperty $entry[0] $ExecutionContext.InvokeCommand.NewScriptBlock($scriptBlock)
         }
+
+    # $tfs.EnsureAuthenticated()
+        
+    # Sleep for 5 secs
+    #Write-Host 'Starting to sleep for 5 seconds for the first time'
+    #Start-Sleep -s 5
+
+    # Check HasAuthenticated flag
+    Write-Host "tfs.HasAuthenticated == $($tfs.HasAuthenticated)"
+
+    if ($tfs.HasAuthenticated -ne $true)
+    {
+        $wc = New-Object System.Net.WebClient
+        $wc.Proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
+        #Invoke-Command -ComputerName mow04dev014 -ScriptBlock { $tfs.Authenticate() } -credential $cred
+        $tfs.Authenticate()
+    }
+
+    # Inspect TFS variable
+    Write-Host (Get-Variable -Name tfs)
+
+    # Sleep for 5 secs
+    #Write-Host 'Starting to sleep for 5 seconds for the second time'
+    #Start-Sleep -s 5
+
     return $tfs
 }
 
