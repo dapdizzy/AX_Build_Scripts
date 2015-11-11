@@ -92,9 +92,9 @@ function Write-InfoLog($message)
 function Write-ErrorLog($message)
 {
     Write-InfoLog (" ")
-    Write-InfoLog ("ERROR: *********")
-    Write-InfoLog ($message)
-    Write-InfoLog ("****************")
+    Write-Host "ERROR: *********" -ForegroundColor Red -BackgroundColor Black
+    Write-Host $message -ForegroundColor Red -BackgroundColor Black
+    Write-Host "****************" -ForegroundColor Red -BackgroundColor Black
     Write-InfoLog (" ")
     
     if($transcriptStarted -eq $true)
@@ -239,8 +239,12 @@ function Synchronize-AX($tableId = 0)
 		foreach($event in Get-EventLog Application | Where-Object {$_.Source -match "Dynamics Server" -and $_.EntryType -eq "Error" -and $_.Timegenerated -gt $SynchStartTime})
 		{
 			Write-ErrorLog($event.Message.Substring($event.Message.IndexOf('[SQL Server]')+'[SQL Server]'.get_length()))
-		}	
-		Write-TerminatingErrorLog("Synchronize doesn't finished on time. Stopping the build")
+		}
+        # Fail the whole script only for the Build script
+        if ($script:scriptName -eq 'BUILD')
+        {
+		    Write-TerminatingErrorLog("Synchronize didn't finish on time. Stopping the build")
+        }
 	}
 	Write-InfoLog ("Synchronize finished : {0}" -f (Get-Date)) 
     Write-InfoLog (" ")
@@ -587,7 +591,7 @@ function Compile-AX
     Write-InfoLog ("                                                                 ") 
     Write-InfoLog ("                                                                 ") 
         
-    Compile-Build   
+    Compile-Build
     
     Write-InfoLog ("Compile finished : {0}" -f (Get-Date)) 
 
@@ -868,11 +872,18 @@ function Compile-VisualStudioProjects([System.IO.FileSystemInfo]$model)
     Write-InfoLog('Compilation of VS projects succeded at {0}' -f (Get-Date))
 }
 
+function Kill-AX32Processes
+{
+    # Kill All active Ax32.exe processes if any
+    Get-Process -Name 'Ax32' -ErrorAction SilentlyContinue | Stop-Process -Force
+    # Sleep for 5 seconds in order to give enough time for the resources to be reclaimed
+    Start-Sleep -s 5
+}
+
 function Copy-VSProjectsBinaries
 {
     # copy compiled dlls to Client & Server Bin dirs
-    # Kill All active Ax32.exe processes if any
-    Get-Process -Name 'Ax32' -ErrorAction SilentlyContinue | Stop-Process -Force
+    Kill-AX32Processes
     Copy-Item "$vsProjBinFolder\*" $clientBinDir -Force -Recurse -ErrorAction SilentlyContinue 
     Write-Infolog ("Compiled VS projected have been copied to $clientBinDir")
     Copy-Item "$vsProjBinFolder\*" $serverBinDir -Force -Recurse -ErrorAction SilentlyContinue 
@@ -1139,6 +1150,54 @@ function CreateSpecificXPOs([string]$xpoFileName)
             $shouldDecide = $true
             $buffer = ''
         }
+        elseif ($line -match 'Element: SDT' -or $line -match 'Element: SPV' -or $line -match 'Element: SPC' -or $line -match 'Element: SRO')
+        {
+            if (!$secWriter)
+            {
+                $secXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_sec.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $secWriter = InitXpoWriter $secXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($secWriter)
+            }
+            $secWriter.WriteLine()
+            $writer = $secWriter
+            $copyLine = $true
+        }
+        elseif ($line -match 'Element: SVC')
+        {
+            if (!$svcWriter)
+            {
+                $svcXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_svc.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $svcWriter = InitXpoWriter $svcXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($svcWriter)
+            }
+            $svcWriter.WriteLine()
+            $writer = $svcWriter
+            $copyLine = $true
+        }
+        elseif ($line -match 'Element: PRN')
+        {
+            if (!$prjWriter)
+            {
+                $prjXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_prj.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $prjWriter = InitXpoWriter $prjXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($prjWriter)
+            }
+            $prjWriter.WriteLine()
+            $writer = $prjWriter
+            $copyLine = $true
+        }
         if ($copyLine -eq $true)
         {
             if ($shouldDecide -eq $true)
@@ -1151,12 +1210,6 @@ function CreateSpecificXPOs([string]$xpoFileName)
                 $writer.WriteLine($line)
             }
         }
-        # What a weird condition is this??? How did it ever got formed and used????
-        <#if ($line -match 'ENDREFERENCE' -and $copyLine -eq $true)
-        {
-            $writer.WriteLine()
-            $copyLine = $false
-        }#>
     }
     foreach ($w in $writers)
     {
@@ -1206,6 +1259,8 @@ function Put-BuildNumber($AxModelManifest)
 
 function Install-DependentBinaries
 {
+    # Kill AX32.exe processes that may block dependent binaries from being copied to client bin dir
+    Kill-AX32Processes
     Write-InfoLog ("Start Install-DependentBinaries: {0}" -f (Get-Date)) 
     if ($dependencyPath -ne $null -and (Test-Path $dependencyPath) -eq $True)
     {
@@ -1462,47 +1517,52 @@ function Create-PackagesConfig
 function Install-Packages
 {
     # Setup NuGet for usage
+    $template = 'nuget Sources {0} -Name {1} -Source "{2}" -UserName {3} -Password {4}'
+    $verb = 'Remove'
+    $name = 'mmm'
     $user = 'mmruser'
     $pwd = 'Qwerty12345'
     $feedSource = 'https://mediamarkt.myget.org/F/models/api/v2/'
-    $expr = ('nuget Sources Add -Name mmm -Source "{0}" -UserName {1} -Password {2}' -f $feedSource, $user, $pwd)
+    $expr = ($template -f $verb, $name, $feedSource, $user, $pwd)
     Invoke-Expression $expr
+    $verb = 'Add'
+    $expr = ($template -f $verb, $name, $feedSource, $user, $pwd)
+    Invoke-Expression $expr
+    $verb = 'Remove'
+    $name = 'mmd'
     $feedSource = 'https://mediamarkt.myget.org/F/default/api/v2/'
-    $expr = ('nuget Sources Add -Name mmm -Source "{0}" -UserName {1} -Password {2}' -f $feedSource, $user, $pwd)
+    $expr = $expr = ($template -f $verb, $name, $feedSource, $user, $pwd)
+    Invoke-Expression $expr
+    $verb = 'Add'
+    $expr = $expr = ($template -f $verb, $name, $feedSource, $user, $pwd)
     Invoke-Expression $expr
     # Ensure packages output directory is created
     New-Item (Join-Path $currentLogFolder 'Packages') -itemtype Directory -Force
     # Build nuget install expression
     $nugetInstallExpr = ('nuget install "{0}" -o "{1}"' -f (Join-Path $currentLogFolder packages.config), (Join-Path $currentLogFolder Packages))
     Invoke-Expression $nugetInstallExpr
-    # Install the assemblies themselves to GAC
-    #[System.Reflection.Assembly]::Load("System.EnterpriseServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=AMD64")
-    #[Reflection.Assembly]::LoadWithPartialName("System.EnterpriseServices") | Out-Null
-    #$publish = New-Object System.EnterpriseServices.Internal.Publish
-    $gacutilExe = 'C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe'
-    #$gacutilExpr = '"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe" /i "{0}"'
-    
-    $dlls = gci -Path (Join-Path $currentLogFolder Packages) -Include '*.dll' -Recurse | Select-Object -Property FullName
-    ForEach ($dll in $dlls)
-    #| ForEach-Object `
+
+    Install-PackagesToGAC ($currentLogFolder)
+}
+
+function Install-PackagesToGAC($packagesFolder)
+{
+    if (!$gacutilExe)
     {
-        <#$expr = ($gacutilExpr -f $_.FullName)
-        Write-InfoLog $expr
-        Invoke-Expression $expr#>
-        $p = Start-Process $gacutilExe -ArgumentList ('/i "{0}"' -f $_.FullName) -OutVariable out -PassThru
+        $gacutilExe = 'C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe'
+    }
+
+    $dlls = gci -Path $packagesFolder -Include '*.dll' -Recurse # | Select-Object -Property FullName
+    ForEach ($dll in $dlls)
+    {
+        $p = Start-Process $gacutilExe -ArgumentList ('/i "{0}"' -f $dll.FullName) -OutVariable out -PassThru
         if ($p.WaitForExit(5000) -ne $true)
         {
             Write-ErrorLog 'GacUtil was unable to complete in 5 seconds'
             $p.Kill()
         }
         Write-Infolog $out
-        #Write-Infolog ('GacUtil reported: {0}' -f $out)
     }
-    #$
-    #Set-location "c:\Folder Path"            
-    <#[System.Reflection.Assembly]::Load("System.EnterpriseServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")            
-    $publish = New-Object System.EnterpriseServices.Internal.Publish            
-    $publish.GacInstall("c:\Folder Path\DLL.dll")#>
 }
 
 function Copy-PredefinedAOTprco
@@ -1557,7 +1617,7 @@ function Build-VisualStudioProjects([System.IO.FileSystemInfo]$model)
     if((test-path $errlogFile) -eq $true)
     {
         $fileContent = Get-Content $errlogFile -ErrorAction SilentlyContinue
-        if($errlogFile -eq $null -or $errlogFile.Trim() -eq '')
+        if($fileContent -eq $null -or $fileContent.Trim() -eq '')
         {
             $retError = $false        
         }
@@ -1565,7 +1625,7 @@ function Build-VisualStudioProjects([System.IO.FileSystemInfo]$model)
     
     if($retError -eq $true)
     {
-        Write-InfoLog ('Failed to import VS project for model {0}' -f $modelName)
+        Write-ErrorLog ('Failed to import VS project for model {0}' -f $modelName)
         #Write-TerminatingErrorLog('Failed to import VS project for model {0}' -f $modelName)
     }
 }
@@ -1686,6 +1746,29 @@ function Load-Models($folder, $list)
         }
     }
 	Write-InfoLog ("End: Load-Models : {0}" -f (Get-Date)) 
+}
+
+function Import-VSProjectsForModel($modelListFileName)
+{
+    $done = $false
+    if (($modelListFileName -ne $null) -and (Test-Path $modelListFileName) -eq $true)
+    {
+        $fileContent = Get-Content $modelListFileName
+        foreach ($line in $fileContent)
+        {
+            if(($line -ne $null) -and ($line.Trim() -ne ''))
+            {
+                $split = $line.Trim().Split('.')
+                Build-VisualStudioProjects (Get-Item -Path (Join-Path (Join-Path $ApplicationSourceDir $split[0]) Model.xml))
+                $done = $true
+            }
+        }
+    }
+
+    if ($done -eq $true)
+    {
+        Write-InfoLog 'Import of VS Projects into AX app succeeded'
+    }
 }
 
 function Read-ModelList($folder)
@@ -2268,6 +2351,7 @@ function Sync-FilesToALabel
     [void][System.Reflection.Assembly]::LoadWithPartialName("Microsoft.TeamFoundation.VersionControl.Client")
 
     $tfs = GET-TFS $tfsUrl
+    $itemSpec = new-object Microsoft.TeamFoundation.VersionControl.Client.ItemSpec ($TFSWorkspace, 2)
     if($tfsLabel -ne $null)
     {
         $labelSpec = new-object Microsoft.TeamFoundation.VersionControl.Client.LabelVersionSpec ($tfslabel)
@@ -2276,12 +2360,33 @@ function Sync-FilesToALabel
     {
         $labelSpec = [Microsoft.TeamFoundation.VersionControl.Client.VersionSpec]::Latest
     }
+
+    $script:w = $tfs.VCS.TryGetWorkspace($ApplicationSourceDir)
+    if ($w -eq $null)
+    {
+        Write-Infolog "Local path $ApplicationSourceDir is not associated with a TFS Workspace"
+        $guid = [Guid]::NewGuid().ToString()
+        $wName = 'AXBuild_' + $guid
+        Write-InfoLog ("Creating workspace {0}" -f $wName) 
+        $labelName = ($tfsLabelPrefix -f $currentVersion)
+        <#$label = new-object Microsoft.TeamFoundation.VersionControl.Client.VersionControlLabel  ($tfs.vcs, $labelName, $tfs.VCS.AuthenticatedUser, $null, $labelComments)
+        $itemSpec = new-object Microsoft.TeamFoundation.VersionControl.Client.ItemSpec ($TFSWorkspace, 2)
+        $versionSpec = [Microsoft.TeamFoundation.VersionControl.Client.VersionSpec]::Latest#>
     
-    $script:w = $tfs.VCS.GetWorkspace($ApplicationSourceDir)
+        #Instrumentation
+        Write-InfoLog ("Calling CreateWorkspace with the following arguments: workspaceName = {0}, owner = {1}" -f $wName, $tfs.VCS.AuthenticatedUser)
+    
+        $script:w = $tfs.VCS.CreateWorkspace($wName, $tfs.VCS.AuthenticatedUser)
+    }
+
+    #$script:w = $tfs.VCS.GetWorkspace($ApplicationSourceDir)
     
     try
     {
-        Write-InfoLog ("Sync files started") 
+        Write-InfoLog ("Remove old source controlled filed from {0}" -f $ApplicationSourceDir)
+        Remove-Item -Path "$ApplicationSourceDir\*" -Exclude "Definition" -Force -Recurse -ErrorAction SilentlyContinue 
+        $w.Map($tfsWorkspace, $ApplicationSourceDir)
+        Write-InfoLog ("Sync files started")
         $g = $w.Get($labelSpec, 1)
        
         Write-InfoLog ("Sync files done") 
@@ -2289,7 +2394,7 @@ function Sync-FilesToALabel
     }
     catch
     {
-        Write-TerminatingErrorLog "Exception while mapping TFS workspace." $Error[0]
+        Write-TerminatingErrorLog "Exception while synchronizing TFS workspace." $Error[0]
     }
     
     Write-InfoLog ("End Sync files {0}" -f (get-date))     
@@ -2336,7 +2441,7 @@ function Sync-Files
         {
             Write-InfoLog('Path {0} is not locally mapped in TFS' -f $ApplicationSourceDir)
         }
-        $w.Map($tfsWorkspace, $ApplicationSourceDir)    
+        $w.Map($tfsWorkspace, $ApplicationSourceDir)
         #$w.Map($wName, $ApplicationSourceDir)    
         
         Write-InfoLog ("Sync files started") 

@@ -67,7 +67,9 @@ function Get-InputVariables ($homePath)
     $script:CleanOnly               = GetEnvironmentVariable("UninstallOnly")
     $script:AOSNotOnDeployBox       = GetEnvironmentVariable("AOSNotOnDeployBox")
     $script:NoCleanOnError          = GetEnvironmentVariable("NoCleanOnError")
-    $script:InstallModelStore          = GetEnvironmentVariable("InstallModelStore")
+    $script:InstallModelStore       = GetEnvironmentVariable("InstallModelStore")
+    $script:MsBuildPath             = GetEnvironmentVariable("MsBuildDir")
+    $script:TFSWorkspace            = GetEnvironmentVariable("TFSWorkspace")
     
     if ((Test-Path $RunDeployParmFile) -eq $false)
     {
@@ -89,7 +91,8 @@ function Get-InputVariables ($homePath)
         $buffer += "TFSLabel="+ $TFSLabel   
         $buffer += "ApplicationSourceDir="+ $ApplicationSourceDir
         $buffer | Out-File $RunDeployParmFile -Encoding Default
-    }       
+    }
+    $script:vsProjBinFolder = join-path $dropLocation "VSProjBin"
 }
 
 function Validate-InputVariables
@@ -178,32 +181,22 @@ function Deploy-AX
     Write-InfoLog (" ")
 
     #Step 6
-    <#Stop-AOS
+    Stop-AOS
     Write-InfoLog (" ")
     
     Remove-Item -Path (Join-Path $clientLogDir "*.*") -ErrorAction SilentlyContinue
     Remove-Item -Path (Join-Path $env:LOCALAPPDATA "ax_*.auc") -ErrorAction SilentlyContinue
     
-    Clean-Build    #>
-    
-    if ($InstallModelStore -eq $true)
-    {
-        $modelStoreLocation = (Join-Path $dropLocation 'application\appl')
-        # Select only the first *.axmodelstore file for import
-        $modelStore = @(gci -path $modelStoreLocation -filter *.axmodelstore)[0]
-        if ($modelStore -eq $null)
-        {
-            Write-TerminatingErrorLog "Model store file wan not found in the drop folder $modelStoreLocation"
-        }
-        $modelStore = $modelStore.FullName
-        Install-ModelStore $modlelStore
-        return
-    }
+    #Clean-Build
     
     if($CleanOnly -ne $true)
     {
         #Step 7
         Install-DependentBinaries
+
+        Copy-VSProjectsBinaries
+
+        Install-PackagesToGAC (Join-Path (Join-Path $dropLocation Logs) Packages)
         
         #Step 8
         Start-AOS
@@ -212,9 +205,31 @@ function Deploy-AX
         #Synchronize-AX
         
         #Step 11
-        Load-Models (join-path $dropLocation 'application\appl') 'ModelList.txt'      
+        Import-VSProjectsForModel (Join-Path (join-path $dropLocation 'application\appl') 'ModelList.txt')
+        <#if ($InstallModelStore -ne $true)
+        {
+            Load-Models (join-path $dropLocation 'application\appl') 'ModelList.txt'
+        }#>
     }
+
+    if ($InstallModelStore -eq $true)
+    {
+        $modelStoreLocation = (Join-Path $dropLocation 'application\appl')
+        # Select only the first *.axmodelstore file for import
+        $modelStore = @(gci -path $modelStoreLocation -filter *.axmodelstore)[0]
+        if ($modelStore -eq $null)
+        {
+            Write-TerminatingErrorLog "Model store file was not found in the drop folder $modelStoreLocation"
+        }
+        $modelStore = $modelStore.FullName
+        Install-ModelStore $modelStore
+    }
+
+    Start-AOS
+
+    Synchronize-AX
     
+    <#
     Write-InfoLog ''
     Write-InfoLog ''
     Write-InfoLog ''
@@ -222,12 +237,10 @@ function Deploy-AX
     Write-InfoLog ''
     Write-InfoLog ''
     Write-InfoLog ''
-    
-    # It seems to me we need to synchronize AX after the model import as otherwise CIL generation issues an error claiming that table object is not recognized by the Database engine
-    #Synchronize-AX
+    #>
     
     #Step 12
-    Compile-Ax
+    #Compile-Ax
 }
 
 
@@ -239,14 +252,14 @@ $script:scriptName = 'DEPLOY'
 try
 {   
     $ErrorActionPreference = "Stop"
-    Check-PowerShellVersion
+    #Check-PowerShellVersion
     #Step 
     #Read environment variables comming from the build template (or the parm file)
     Get-InputVariables(Split-Path -Parent $MyInvocation.MyCommand.Path)
     
     if($logFolder -eq $null -or (Test-path $logFolder) -eq $false)
     {
-        Write-TerminatingErrorLog "Log folder is not valid path."
+        Write-TerminatingErrorLog "Log folder is not a valid path."
     }
     
     Write-InfoLog ("Deploy Starting : {0}" -f (Get-Date)) 
@@ -321,7 +334,7 @@ catch
     {
         $script:buildModelStarted = $false
 
-        try
+        <#try
         {
             if($NoCleanOnError -ne $true)
             {
@@ -338,7 +351,7 @@ catch
         {
             Write-ErrorLog ("Failed to revert build.")
             Write-ErrorLog ($Error[0])
-        }
+        }#>
     }
     $ErrorActionPreference = "SilentlyContinue"
     Write-InfoLog ("Deploy finished : {0}" -f (Get-Date)) 
