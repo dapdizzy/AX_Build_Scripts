@@ -1184,9 +1184,14 @@ function CreateSpecificXPOs([string]$xpoFileName)
         }
         elseif ($line -match 'Element: PRN')
         {
-            if (!$prjWriter)
+            if (!$prjWriter -or ($prjWriter.BaseStream.Position -gt 102400))
             {
-                $prjXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_prj.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                if (!$prjCounter)
+                {
+                    $prjCounter = 0
+                }
+                $prjCounter++
+                $prjXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ("{0}_prj($prjCounter).xpo" -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
                 $prjWriter = InitXpoWriter $prjXpoFileName
                 if (!$writers)
                 {
