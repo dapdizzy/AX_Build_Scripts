@@ -8,6 +8,6 @@ foreach ($file in $files)
     $axObjects += $file.FullName.Remove(0, $path.Length)
 }
 
-$axObjects | Out-File -FilePath 'C:\AX\AOTObjects_LIPSAX.txt' -Encoding default
+$axObjects | Out-File -FilePath 'C:\Users\pyatkov\Microsoft\Dynamics Ax\Log\AOTObjects.txt' -Encoding default
 
 Write-Host Done -ForegroundColor Cyan

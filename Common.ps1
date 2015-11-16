@@ -1285,12 +1285,21 @@ function Install-DependentBinaries
     Write-InfoLog ("End Install-DependentBinaries: {0}" -f (Get-Date)) 
 }
 
-function Import-XPO([string]$xpoName)
+function Import-XPO([string]$xpoName, [bool]$isAbsolutePath = $false)
 {
     $aolParm = ''
     if ($aolCode -ne '') {$aolParm = '-aolCode={0}' -f $aolCode}
+    if ($isAbsolutePath -eq $true)
+    {
+        $basePath = Split-Path -Path $xpoName -Parent
+        $xpoName = Split-Path -Path $xpoName -Leaf
+    }
+    else
+    {
+        $basePath = $currentLogFolder
+    }
     Write-InfoLog($xpoName)
-    $arguments = '-aol={0} {1} "-aotimportfile={2}\{4}" -lazyclassloading -lazytableloading -nocompileonimport -internal=noModalBoxes "-model=@{3}"' -f $axLayer,$aolParm,$currentLogFolder,$Model.FullName, $xpoName
+    $arguments = '-aol={0} {1} "-aotimportfile={2}\{4}" -lazyclassloading -lazytableloading -nocompileonimport -internal=noModalBoxes "-model=@{3}"' -f $axLayer,$aolParm,$basePath,$Model.FullName, $xpoName
     Write-InfoLog($arguments)
     $axProcess = Start-Process $ax32 -WorkingDirectory $clientBinDir -PassThru -WindowStyle minimized -ArgumentList $arguments -Verbose
     if ($axProcess.WaitForExit(60000*$ImportTimeout) -eq $false)
@@ -1299,6 +1308,41 @@ function Import-XPO([string]$xpoName)
         Throw ("Error: AX .XPO import did not complete within {0} minutes" -f $ImportTimeout)
     }
     Write-InfoLog ("Done Import combined xpo $xpoName for model {0}: {1}" -f $modelName,(Get-Date))
+}
+
+function Create-AOTObjectsTxt([System.IO.FileSystemInfo]$model)
+{
+    $basePath = $model.Directory.FullName
+    $fileName = ('{0}-AOTObjects.txt' -f $model.Directory.Name)
+    gci -Path $basePath -File -Recurse -Include *.xpo, *.csproj, *.dynamicsproj -ErrorAction SilentlyContinue `
+    |% {$_.FullName.Remove(0, $basePath.Length)} `
+    | Out-File -FilePath (Join-Path $clientLogDir $fileName) -Encoding ascii -ErrorAction Continue
+    Write-Host "Created $fileName" -ForegroundColor Cyan
+}
+
+function Import-MissedObjects([bool]$updateAOTObjectsTxt = $true)
+{
+    foreach ($file in (gci -Path "$clientLogDir\*" -File -Include *-AOTMissingObjects.txt -ErrorAction Continue))
+    {
+        $modelName = $file.Name |? {$_ -match '(?<modelName>^.*)\-[^-]*$'} |% {$Matches['modelName']}
+        $contents = Get-Content -Path $file.FullName
+        $buffer = @()
+        foreach ($line in $contents)
+        {
+            Import-XPO (Join-Path (Join-Path $applicationSourceDir $modelName) $line) $true
+            if ($updateAOTObjectsTxt -eq $true)
+            {
+                $buffer += $line
+            }
+        }
+        if ($updateAOTObjectsTxt -eq $true)
+        {
+            $buffer | Out-File -FilePath (Join-Path (Split-Path -Path $file.FullName) ('{0}-AOTObjects.txt' -f $modelName)) -Encoding default
+        }
+    }
+    #| Get-Content `
+    #|% { foreach ($line in $_) { Import-XPO $line $true; } }
+    #{foreach ($line in (Get-Content $_)) { Import-XPO $line; }}
 }
 
 function Import-AxCode([System.IO.FileSystemInfo]$model)
@@ -1903,6 +1947,30 @@ function Import-BuildModels
     }
     
 	Write-InfoLog ("END: Import-BuildModels: {0}" -f (Get-Date)) 
+}
+
+function Verify-AOTObjectsImported
+{
+    arguments = "-StartupCmd=verifyAOTObjects"
+    $axProcess = Start-Process $ax32 -WorkingDirectory $clientBinDir -PassThru -WindowStyle minimized -ArgumentList $arguments -OutVariable out
+    Write-host $out
+    Write-InfoLog (" ")
+    Write-InfoLog (" ")
+    if ($axProcess.WaitForExit(60000*5) -eq $false)
+    {
+        $axProcess.Kill()
+        Throw ("Error: AX AOT objects verification did not complete within {0} minutes" -f 5)
+    }
+    $ok = $true
+    foreach ($file in (gci -Path "$clientLogDir\*" -File -Include *-AOTMissingObjects.txt -ErrorAction SilentlyContinue))
+    {
+        if ((Get-Content -Path $file.FullName |? {[string]::IsNullOrWhiteSpace($_) -eq $false} | Select -First 1) -ne $null)
+        {
+            $ok = $false
+            break
+        }
+    }
+    $ok
 }
 
 ############################################################################################

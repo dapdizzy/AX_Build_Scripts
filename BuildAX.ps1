@@ -311,6 +311,7 @@ function Build-AX
         
         $modelHash.Add($modelName, $AxLayer)
         Combine-Xpos $model.Directory
+        Create-AOTObjectsTxt $model
         $ret = Check-CombineXpoError
         if ($ret -eq $true)
         {
@@ -355,6 +356,30 @@ function Build-AX
     Create-ModelList   
     Install-DependentBinaries
     Import-BuildModels
+
+    $secodWaveOfImportPassed = $false
+    DO
+    {
+        #Now we can verify all objects have been imported
+        $verificationResult = Verify-AOTObjectsImported
+        if ($verificationResult -eq $true)
+        {
+            Write-Host 'Now, everything is imported' -ForegroundColor Cyan
+        }
+        elseif ($secodWaveOfImportPassed -ne $true)
+        {
+            Write-Host 'Some objects were not imported after combined XPO import' -ForegroundColor Yellow
+            Write-Host 'Attempting to import missed objects...' -ForegroundColor Yellow
+            Import-MissedObjects
+            $secodWaveOfImportPassed = $true
+        }
+        # We actually quit the loop here in case of a negative scenario
+        else
+        {
+            Write-Host 'Still some objects are missing after second wave of import' -ForegroundColor Yellow
+            break
+        }
+    } While ($verificationResult -ne $true)
 
     Write-InfoLog ("*****************************************************************") 
     Write-InfoLog ("*****************************************************************")
