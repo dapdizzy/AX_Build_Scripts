@@ -1951,7 +1951,7 @@ function Import-BuildModels
 
 function Verify-AOTObjectsImported
 {
-    arguments = "-StartupCmd=verifyAOTObjects"
+    $arguments = "-StartupCmd=verifyAOTObjects"
     $axProcess = Start-Process $ax32 -WorkingDirectory $clientBinDir -PassThru -WindowStyle minimized -ArgumentList $arguments -OutVariable out
     Write-host $out
     Write-InfoLog (" ")
