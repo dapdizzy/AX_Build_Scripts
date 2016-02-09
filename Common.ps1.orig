@@ -960,7 +960,9 @@ function Combine-Xpos([System.IO.FileSystemInfo]$modelPath)
         Throw ("Combine XPO for {0} didn't complete after {1} minutes." -f $modelName, $CombineTimeout)			
     }
     
-    CreateSpecificXPOs($combinedXpoFile)
+    Create-SpecificXPOs $combinedXpoFile
+
+    #CreateSpecificXPOs($combinedXpoFile)
     
     Write-InfoLog ("End: Combine-Xpos: {0}" -f (Get-Date))  
 }
@@ -1031,6 +1033,292 @@ function InitXpoWriter([string]$fileName)
     $writer
 }
 
+function Get-WritersHashTable($writers)
+{
+    if (!$writers)
+    {
+        $writers = @{}
+    }
+    $writers
+}
+
+function Lookup-Writer($writers, [string]$fileName)
+{
+    $writer = $null
+    Write-Host "Writers length = $($writers.Count)" -ForegroundColor Cyan
+    if ($writers.Contains($fileName) -eq $true)
+    {
+        Write-Host "Writers contains $fileName" -ForegroundColor Cyan
+        $writer = $writers.get_Item($fileName)
+    }
+    $writer
+}
+
+function Get-Writer($writers, [string]$fileName)
+{
+    $writer = Lookup-Writer $writers $fileName
+    if (!$writer)
+    {
+        $writer = InitXpoWriter $fileName
+        $writers.Add($fileName, $writer)
+    }
+    $writer
+}
+
+function New-XPOSuffixedFileName([string]$xpoFileName, [string]$suffix)
+{
+    [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ("{0}_$suffix.xpo" -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+}
+
+function New-XPOFileName([string]$xpoFileName, [string]$newName)
+{
+    [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ("$newName.xpo" -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+}
+
+function Create-SpecificXPOs([string]$xpoFileName)
+{
+    $fileContents = Get-Content $xpoFileName -ErrorAction SilentlyContinue
+    $writers = Get-WritersHashTable $writers
+    $writer = $null # Current XPO StreamWriter
+    $shouldDecide = $false # A Boolean, denoting whether we should write to the current writer right away, or should we temporary accumulate text in a $buffer and then decide and flush the $buffer to the correct $writer
+    $buffer = $null # A buffer variable for temporal storage of lines while we are in a 'not decided' mode, i.e., till we have not decided which writer should be used
+    foreach ($line in $fileContents)
+    {
+        # Finalize current element writing
+        if ($line -match 'Element:' -and $copyLine -eq $true -and $writer -ne $null)
+        {
+            $writer.WriteLine()
+            $copyLine = $false
+            $writer = $null #Reset the $writer as it should be reselected based on the element type and name
+        }
+        if ($shouldDecide -eq $true -and $line -match '; Microsoft Dynamics AX')
+        {
+            if ($line -match 'Table : Sys') # i.e., a System table
+            {
+                $fileName = New-XPOSuffixedFileName $xpoFileName 'sysTab'
+                
+                <#if (!$sysTabWriter)
+                {
+                    $sysTabXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_sysTab.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                    $sysTabWriter = InitXpoWriter $sysTabXpoFileName
+                    if (!$writers)
+                    {
+                        $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                    }
+                    $writers.Add($sysTabWriter)
+                }
+                $writer = $sysTabWriter#>
+            }
+            elseif ($line -match 'Class: SysImportElements' -or $line -match 'Class: SysStartupCmdAOTImport' -or $line -match 'Class: SysStartupCmdCompilePartial')  # special case for SysImportElements
+            {
+                $fileName = New-XPOSuffixedFileName $xpoFileName 'sysCls'
+
+                <#if (!$sysClsWriter)
+                {
+                    $sysClsXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_sysCls.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                    $sysClsWriter = InitXpoWriter $sysClsXpoFileName
+                    if (!$writers)
+                    {
+                        $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                    }
+                    $writers.Add($sysClsWriter)
+                }
+                $writer = $sysClsWriter#>
+            }
+            elseif ($line -match 'Class: MMS_VerifyImportedAOTObjects')
+            {
+                $fileName = New-XPOFileName $xpoFileName 'MMS_VerifyImportedAOTObjects'
+
+                <#if (!$mms_verifyImportedAOTObjectsWriter)
+                {
+                    $mms_verifyImportedAOTObjectsWriterFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), 'MMS_VerifyImportedAOTObjects.xpo')
+                    $mms_verifyImportedAOTObjectsWriter = InitXpoWriter $mms_verifyImportedAOTObjectsWriterFileName
+                    if (!$writers)
+                    {
+                        $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                    }
+                    $writers.Add($mms_verifyImportedAOTObjectsWriter)
+                }
+                $writer = $mms_verifyImportedAOTObjectsWriter#>
+            }
+
+            if ($fileName -ne $null -and $fileName -ne '')
+            {
+                $writer = Get-Writer $writers $fileName
+            }
+            
+            # At this point we have already determined (i.e., decided) which writer to use
+            $shouldDecide = $false
+            if ($writer -ne $null)
+            {
+                $writer.WriteLine()
+                # Flush accumulated buffer
+                $writer.Write($buffer)
+            }
+            # Flush the buffer in any case there
+            $buffer = ''
+        }
+        if ($line -match 'Element: REF')
+        {
+            $fileName = New-XPOSuffixedFileName $xpoFileName 'refs'
+
+            <#if (!$refWriter)
+            {
+                $refXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_refs.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $refWriter = InitXpoWriter $refXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($refWriter)
+            }
+            $refWriter.WriteLine()
+            $writer = $refWriter#>
+            $copyLine = $true
+        }
+        elseif ($line -match 'Element: DBT' -or $line -match 'Element: VIE')
+        {
+            $fileName = New-XPOSuffixedFileName $xpoFileName 'dd'
+
+            <#if (!$ddWriter)
+            {
+                $ddXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_dd.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $ddWriter = InitXpoWriter $ddXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($ddWriter)
+            }
+            $ddWriter.WriteLine()
+            $writer = $ddWriter#>
+            $copyLine = $true
+            $shouldDecide = $true
+            $buffer = ''
+        }
+        elseif ($line -match 'Element: SRP')
+        {
+            $fileName = New-XPOSuffixedFileName $xpoFileName 'ssrs'
+
+            <#if (!$ssrsWriter)
+            {
+                $ssrsXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_ssrs.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $ssrsWriter = InitXpoWriter $ssrsXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($ssrsWriter)
+            }
+            $ssrsWriter.WriteLine()
+            $writer = $ssrsWriter#>
+            $copyLine = $true
+        }
+        elseif ($line -match 'Element: CLS')
+        {
+            $fileName = New-XPOSuffixedFileName $xpoFileName 'cls'
+
+            <#if (!$clsWriter)
+            {
+                $clsXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_cls.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $clsWriter = InitXpoWriter $clsXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($clsWriter)
+            }
+            $clsWriter.WriteLine()
+            $writer = $clsWriter#>
+            $copyLine = $true
+            $shouldDecide = $true
+            $buffer = ''
+        }
+        elseif ($line -match 'Element: SDT' -or $line -match 'Element: SPV' -or $line -match 'Element: SPC' -or $line -match 'Element: SRO')
+        {
+            $fileName = New-XPOSuffixedFileName $xpoFileName 'sec'
+
+            <#if (!$secWriter)
+            {
+                $secXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_sec.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $secWriter = InitXpoWriter $secXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($secWriter)
+            }
+            $secWriter.WriteLine()
+            $writer = $secWriter#>
+            $copyLine = $true
+        }
+        elseif ($line -match 'Element: SVC')
+        {
+            $fileName = New-XPOSuffixedFileName $xpoFileName 'svc'
+
+            <#if (!$svcWriter)
+            {
+                $svcXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ('{0}_svc.xpo' -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $svcWriter = InitXpoWriter $svcXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($svcWriter)
+            }
+            $svcWriter.WriteLine()
+            $writer = $svcWriter#>
+            $copyLine = $true
+        }
+        elseif ($line -match 'Element: PRN')
+        {
+            if (!$prjWriter -or ($prjWriter.BaseStream.Position -gt 102400))
+            {
+                if (!$prjCounter)
+                {
+                    $prjCounter = 0
+                }
+                $prjCounter++
+                $fileName = New-XPOSuffixedFileName $xpoFileName "prj($prjCounter)"
+                $prjWriter = Get-Writer $writers $fileName
+                <#$prjXpoFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), ("{0}_prj($prjCounter).xpo" -f [System.IO.Path]::GetFileNameWithoutExtension($xpoFileName)))
+                $prjWriter = InitXpoWriter $prjXpoFileName
+                if (!$writers)
+                {
+                    $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                }
+                $writers.Add($prjWriter)#>
+            }
+            $prjWriter.WriteLine()
+            $writer = $prjWriter
+            $copyLine = $true
+        }
+        if ($writer -eq $null -and $fileName -ne $null -and $fileName -ne '')
+        {
+            $writer = Get-Writer $writers $fileName
+        }
+        if ($copyLine -eq $true)
+        {
+            if ($shouldDecide -eq $true)
+            {
+                # Add a space before the line break symbol to facilitate import via SysImportElements class (due to SysImportElements parser weirdness)
+                $buffer += $line + " `n" #F*cking 'new line' symbol in powershell
+            }
+            else
+            {
+                $writer.WriteLine($line)
+            }
+        }
+    }
+    foreach ($w in $writers.Values)
+    {
+        $w.WriteLine()
+        $w.WriteLine('***Element: END')
+        $w.Close()
+    }
+}
+
+# TODO: To be removed after testing
 function CreateSpecificXPOs([string]$xpoFileName)
 {
     $fileContents = Get-Content $xpoFileName -ErrorAction SilentlyContinue
@@ -1047,7 +1335,7 @@ function CreateSpecificXPOs([string]$xpoFileName)
         }
         if ($shouldDecide -eq $true -and $line -match '; Microsoft Dynamics AX')
         {
-            if ($line -match 'Table : Sys' -or $line -match 'EventInbox') # i.e., a System table
+            if ($line -match 'Table : Sys') # i.e., a System table
             {
                 if (!$sysTabWriter)
                 {
@@ -1061,7 +1349,7 @@ function CreateSpecificXPOs([string]$xpoFileName)
                 }
                 $writer = $sysTabWriter
             }
-            elseif ($line -match 'Class: SysImportElements' -or $line -match 'SysStartupCmd' -or $line -match 'Class: SysStartupCmdAOTImport' -or $line -match 'Class: SysStartupCmdCompilePartial' -or $line -match 'MMS_VerifyImportedAOTObjects')  # special case for SysImportElements
+            elseif ($line -match 'Class: SysImportElements' -or $line -match 'Class: SysStartupCmdAOTImport' -or $line -match 'Class: SysStartupCmdCompilePartial')  # special case for SysImportElements
             {
                 if (!$sysClsWriter)
                 {
@@ -1074,6 +1362,20 @@ function CreateSpecificXPOs([string]$xpoFileName)
                     $writers.Add($sysClsWriter)
                 }
                 $writer = $sysClsWriter
+            }
+            elseif ($line -match 'Class: MMS_VerifyImportedAOTObjects')
+            {
+                if (!$mms_verifyImportedAOTObjectsWriter)
+                {
+                    $mms_verifyImportedAOTObjectsWriterFileName = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($xpoFileName), 'MMS_VerifyImportedAOTObjects.xpo')
+                    $mms_verifyImportedAOTObjectsWriter = InitXpoWriter $mms_verifyImportedAOTObjectsWriterFileName
+                    if (!$writers)
+                    {
+                        $writers = new-object 'System.Collections.Generic.List[System.IO.StreamWriter]'
+                    }
+                    $writers.Add($mms_verifyImportedAOTObjectsWriter)
+                }
+                $writer = $mms_verifyImportedAOTObjectsWriter
             }
             
             # At this point we have already determined (i.e., decided) which writer to use
@@ -1314,14 +1616,10 @@ function Create-AOTObjectsTxt([System.IO.FileSystemInfo]$model)
 {
     $basePath = $model.Directory.FullName
     $fileName = ('{0}-AOTObjects.txt' -f $model.Directory.Name)
-    $fullFileName = (Join-Path $clientLogDir $fileName)
-    <#gci -Path $basePath -File -Recurse -Include *.xpo -ErrorAction SilentlyContinue `
-    |% {gc $_.FullName -totalcount 20} |? {$_ -match 'Microsoft Dynamics AX \w+: (?<objectName>\w+) \w+$'} |% {$Matches['objectName']} `
-    | Out-File -FilePath $fullFileName -Encoding ascii -ErrorAction Continue#>
     gci -Path $basePath -File -Recurse -Include *.xpo, *.csproj, *.dynamicsproj -ErrorAction SilentlyContinue `
     |% {$_.FullName.Remove(0, $basePath.Length)} `
-    | Out-File -FilePath $fullFileName -Encoding ascii -ErrorAction Continue # -Append
-    Write-Host "Created $fullfileName" -ForegroundColor Cyan
+    | Out-File -FilePath (Join-Path $clientLogDir $fileName) -Encoding ascii -ErrorAction Continue
+    Write-Host "Created $fileName" -ForegroundColor Cyan
 }
 
 function Import-MissedObjects([bool]$updateAOTObjectsTxt = $true)
@@ -1402,7 +1700,7 @@ function Import-AxCode([System.IO.FileSystemInfo]$model)
     
     # Get the _sysCls.xpo filename using same vicious ps expression
     $sysClsXpoFileName = gci -Path "$currentLogFolder\*" -Include "*_sysCls.xpo" -Name -ErrorAction SilentlyContinue | select -f 1
-    if ($sysClsXpoFileName -ne $null -and $sysClsXpoFileName  -ne '')
+    if ($sysClsXpoFileName -ne '')
     {
         #$title = ('---------------Starting to import system classes via Import AOT Startup CMD at {0}---------------------' -f (Get-Date))
         #$barLine = new-object System.String ([char]'-', $title.Length)
@@ -1448,7 +1746,7 @@ function Import-AxCode([System.IO.FileSystemInfo]$model)
     
     # Get the _sysTab.xpo filename using vicious expression
     $sysTabXpoFileName = gci -Path "$currentLogFolder\*" -Include "*_sysTab.xpo" -Name -ErrorAction SilentlyContinue | select -f 1
-    if ($sysTabXpoFileName -ne $null -and $sysYabXpoFileName -ne '')
+    if ($sysTabXpoFileName -ne '')
     {
         #$title = ('---------------Starting to import system tables via Import AOT Startup CMD at {0}---------------------' -f (Get-Date))
         #$barLine = new-object System.String ([char]'-', $title.Length)
@@ -1471,6 +1769,29 @@ function Import-AxCode([System.IO.FileSystemInfo]$model)
         Write-Infolog ('---------------Finished importing of system tables via Import AOT Startup CMD at {0}------------------' -f (Get-Date))
         Write-InfoLog $barLine
     }
+
+    # Import MMS_VerifyImportedAOTObjects.xpo using startup CMD to force compilation right after the object is imported
+    $mms_VerifyImportedAOTObjectsXpoName = Join-Path $currentLogFolder 'MMS_VerifyImportedAOTObjects.xpo'
+    if ((Test-Path $mms_VerifyImportedAOTObjectsXpoName) -eq $true)
+    {
+        Write-Host "Starting to import $mms_VerifyImportedAOTObjectsXpoName at $(Get-Date)" -ForegroundColor Cyan -BackgroundColor Black
+
+        $arguments = ('-lazyclassloading -lazytableloading "-StartupCmd=aotimport_{0}" -internal=noModalBoxes' -f $mms_VerifyImportedAOTObjectsXpoName)
+        $axProcess = Start-Process $ax32 -WorkingDirectory $clientBinDir -PassThru -WindowStyle minimized -ArgumentList $arguments -OutVariable out
+        Write-InfoLog $out
+        if ($axProcess.WaitForExit(60000*$ImportTimeout) -eq $false)
+        {
+            Write-InfoLog("Error: AX AOT import did not complete within {0} minutes" -f $ImportTimeout)
+        	$axProcess.Kill()
+        }
+        Write-Host "Finished importing of $mms_VerifyImportedAOTObjectsXpoName at $(Get-Date)" -ForegroundColor Cyan -BackgroundColor Black
+    }
+    else
+    {
+        # Give a kind of a warning in this case
+        Write-Host "For some reason we are missing the $mms_VerifyImportedAOTObjectsXpoName" -ForegroundColor Yellow -BackgroundColor Black
+    }
+
 
     foreach ($xpoName in (gci -Path "$currentLogFolder\*" -Include "$xpoNamePrefix*.xpo" -Exclude '*_sys*.xpo' -Name)) # Handle sysTab (System Tables) & sysCls (System Classes) separately
     {
@@ -1955,7 +2276,22 @@ function Import-BuildModels
 
 function Verify-AOTObjectsImported
 {
-    $arguments = "-StartupCmd=verifyAOTObjects"
+<<<<<<< HEAD
+    $ax32Args = "-lazyclassloading -lazytableloading -StartupCmd=verifyAOTObjects"
+    #$args = "-StartupCmd=verifyAOTObjects"
+    $axProcess = Start-Process $ax32 -WorkingDirectory $clientBinDir -PassThru -WindowStyle minimized -ArgumentList $ax32Args -OutVariable out
+    Write-host $out
+    Write-InfoLog (" ")
+    Write-InfoLog (" ")
+
+    if ($axProcess.WaitForExit(60000*5) -eq $false)
+    {
+        $axProcess.Kill()
+        # Do not throw here, since it's not an Error that should stop the Build process in any case
+        Write-Host ("AX AOT objects verification did not complete within {0} minutes" -f 5) -ForegroundColor Yellow -BackgroundColor Black
+        #Throw ("Error: AX AOT objects verification did not complete within {0} minutes" -f 5)
+=======
+    arguments = "-StartupCmd=verifyAOTObjects"
     $axProcess = Start-Process $ax32 -WorkingDirectory $clientBinDir -PassThru -WindowStyle minimized -ArgumentList $arguments -OutVariable out
     Write-host $out
     Write-InfoLog (" ")
@@ -1963,8 +2299,8 @@ function Verify-AOTObjectsImported
     if ($axProcess.WaitForExit(60000*5) -eq $false)
     {
         $axProcess.Kill()
-        Write-Host ('AX AOT objects verification did not complete within {0} minutes' -f 5) -ForegroundColor Yellow
-        #Throw ("Error: AX AOT objects verification did not complete within {0} minutes" -f 5)
+        Throw ("Error: AX AOT objects verification did not complete within {0} minutes" -f 5)
+>>>>>>> dd7d13c... Added Build verification logic as well as lots of cool auxiliary stuff.
     }
     $ok = $true
     foreach ($file in (gci -Path "$clientLogDir\*" -File -Include *-AOTMissingObjects.txt -ErrorAction SilentlyContinue))
@@ -1978,6 +2314,38 @@ function Verify-AOTObjectsImported
     $ok
 }
 
+<<<<<<< HEAD
+function Ensure-AOTObjectsImported
+{
+    $secodWaveOfImportPassed = $false
+    $verificationResult = $false
+    DO
+    {
+        #Now we can verify all objects have been imported
+        $verificationResult = Verify-AOTObjectsImported
+        if ($verificationResult -eq $true)
+        {
+            Write-Host 'Now, everything is imported' -ForegroundColor Cyan
+        }
+        elseif ($secodWaveOfImportPassed -ne $true)
+        {
+            Write-Host 'Some objects were not imported after combined XPO import' -ForegroundColor Yellow
+            Write-Host 'Attempting to import missed objects...' -ForegroundColor Yellow
+            Import-MissedObjects
+            $secodWaveOfImportPassed = $true
+        }
+        # We actually quit the loop here in case of a negative scenario
+        else
+        {
+            Write-Host 'Still some objects are missing after second wave of import' -ForegroundColor Yellow
+            break
+        }
+    } While ($verificationResult -ne $true)
+    $verificationResult
+}
+
+=======
+>>>>>>> dd7d13c... Added Build verification logic as well as lots of cool auxiliary stuff.
 ############################################################################################
 #Collect-Build
 ############################################################################################
@@ -2107,8 +2475,7 @@ function Clean-Build
     Set-AXModelStore -NoInstallMode -Server $sqlServer -Database $sqlModelDatabase -OutVariable out -Verbose
     Write-InfoLog $out
     Stop-AOS
-    # TODO: set proper .modelstore filename here. Probably this should be extracted to the parameters.txt file.
-    Install-ModelStore (join-path $backupModelStoreFolder "CleanAXR3.axmodelstore")
+    Install-ModelStore (join-path $backupModelStoreFolder "CleanAX.axmodelstore")
     Write-InfoLog ('---------------------------------------------------------------')
     Write-Infolog 'Clean modelstore has been restored'
     Write-InfoLog ('---------------------------------------------------------------')
@@ -2589,6 +2956,26 @@ function Disable-VCS
 ############################################################################################
 #END TFS
 ############################################################################################
+
+# Auxiliary general purpose functions
+
+function Execute-Steps($steps = @(), [int]$startingIndex = 0)
+{
+    $logFileName = Join-Path $currentLogFolder "Executed$($scriptName)Steps.txt"
+    for ($i = $startingIndex
+    $i -lt $steps.Length
+    $i++)
+    {
+        $step = $steps.Get($i)
+        iex $step
+        $step | Out-File -FilePath $logFileName -Append -Encoding default
+    }
+    <#foreach ($step in $steps)
+    {
+        iex $step
+        $step | Out-File -FilePath "Executed$($scriptName)Steps.txt" -Append -Encoding default
+    }#>
+}
 
 Add-Type -AssemblyName system.ServiceProcess
 

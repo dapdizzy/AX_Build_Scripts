@@ -260,13 +260,216 @@ function Scan-InputErrors
     $retVal
 }
 
+function Get-BuildSteps
+{
+    $steps = @()
+    $steps += 'Disable-VCS'
+    if($TFSIntegration -eq "True")
+    {
+        $steps += 'Setup-TFSIntegration'
+    }
+    else
+    {
+        $steps += 'Set-NextVersion'
+    }
+    $steps += 'Validate-ApplicationDir'
+    $steps += 'Init-ModelLayerMap'
+    $steps += 'Create-ModelMap'
+    $steps += 'CombineAndExport-XPO'
+    $steps += 'Create-PackagesConfig'
+    $steps += 'Install-Packages'
+    $steps += 'Output-Models'
+    $steps += 'Clean-Build'
+    $steps += 'Prepare-ModelLayerMap'
+    $steps += 'Create-ModelList'  
+    $steps += 'Install-DependentBinaries'
+    $steps += 'Import-BuildModels'
+    $steps += 'Ensure-AOTObjectsImported'
+    $steps += 'Print-FooterLines'
+    $steps += 'Execute-CompileAX'
+    $steps += 'Execute-CollectBuild'
+}
+
+function Setup-TFSIntegration
+{
+    try
+    {            
+        Sync-Files
+        Set-NextVersion
+        #Apply-Label
+    }
+    finally
+    {
+        if($w -ne $null)
+        {
+            Write-InfoLog ("Deleting workspace.") 
+            $d= $w.Delete()
+        }
+    }
+}
+
+function Validate-ApplicationDir
+{
+    if ( $ApplicationDir -eq $null -or (Test-Path $ApplicationDir) -eq $false)
+    { Write-TerminatingErrorLog ("Wrong local project setting: {0}" -f $localProject)}
+}
+
+function Init-ModelLayerMap
+{
+    $script:modelLayerMap = @{}
+}
+
+function CombineAndExport-XPO
+{
+    Write-InfoLog ("                                                                 ") 
+    Write-InfoLog ("*****************************************************************") 
+    Write-InfoLog ("****************COMBINE AND EXPORT XPOs**************************")
+
+    $script:models = @()
+    $script:modelHash = @{}
+    foreach($ModelToBuild in ((Get-ModelsToBuild).GetEnumerator()) | Where-Object {$_.Folder -ne $null -and $_.Folder -ne ''})
+    {
+        $Model = Get-Item -Path (Join-Path (Join-Path $ApplicationDir $ModelToBuild.Folder) 'Model.xml' )
+        Get-Model $model
+        if ($aolCode -eq '' -and $AxLayer -ne '' -and $AxLayer.SubString(0,2).ToUpper() -ne 'US')
+        {
+            Write-TerminatingErrorLog ("License code is not available for model: {0}" -f $model.FullName)
+        }
+        
+        $modelHash.Add($modelName, $AxLayer)
+        Combine-Xpos $model.Directory
+        Create-AOTObjectsTxt $model
+        $ret = Check-CombineXpoError
+        if ($ret -eq $true)
+        {
+            
+            $models += $model
+            Add-LayerOrder $model $axLayer
+        }
+        else
+        {
+            Write-TerminatingErrorLog ("Unable to combine xpo for: {0}" -f $model.FullName)
+        }
+    }
+}
+
+function Output-Models
+{
+    Write-InfoLog '------------------------------------------>' 
+    Write-InfoLog ('Models list: {0}' -f $models)
+    Write-InfoLog '<------------------------------------------'
+}
+
+function Prepare-ModelLayerMap
+{
+    $modelLayerMap = $modelLayerMap.GetEnumerator() | Sort-Object Name
+    if($modelLayerMap -eq $null)
+    {
+        $modelLayerMap = @{}
+    }
+    if($modelLayerMap.GetType().Name -eq 'DictionaryEntry')
+    {
+        $modelLayerMap = @{ $modelLayerMap.Name = $modelLayerMap.Value}
+    }
+}
+
+function Print-FooterLines
+{
+    Write-InfoLog ("*****************************************************************") 
+    Write-InfoLog ("*****************************************************************")
+    Write-InfoLog ("                                                                 ")
+}
+
+function Execute-CompileAX
+{
+    Write-InfoLog ("                                                                 ") 
+    Write-InfoLog ("*****************************************************************") 
+    Write-InfoLog ("****************COMPILE AX***************************************") 
+    Compile-Ax
+    Write-InfoLog ("*****************************************************************") 
+    Write-InfoLog ("*****************************************************************")
+    Write-InfoLog ("                                                                 ")
+}
+
+function Execute-CollectBuild
+{
+    Write-InfoLog ("                                                                 ") 
+    Write-InfoLog ("*****************************************************************") 
+    Write-InfoLog ("****************COLLECTING BUILD*********************************") 
+    Collect-Build $models
+    Write-InfoLog ("*****************************************************************") 
+    Write-InfoLog ("*****************************************************************")
+    Write-InfoLog ("                                                                 ")
+}
+
+function Initialize-BuildScript
+{
+    $ErrorActionPreference = "SilentlyContinue"
+
+    # Capture Initial script path in a script scoped variable as powershell is not smart enough to provide $Myinvocation variable in a function in a references script (i.e., Common.ps1)
+    $script:startupDir = $MyInvocation.MyCommand.Path
+
+    Write-Host ('Invocation command path: {0}' -f $MyInvocation.MyCommand.Path)
+    $commonps1Path = (join-path (Split-Path -Parent $MyInvocation.MyCommand.Path) "Common.ps1")
+    Write-Host ('Common.ps1 path: {0}' -f $commonps1Path)
+    Write-Host ('Common.ps1 path exists: {0}' -f (Test-Path $commonps1Path))
+
+    #Load common automation library
+    $c = . (join-path (Split-Path -Parent $MyInvocation.MyCommand.Path) "Common.ps1")
+    $script:scriptName = 'BUILD'
+
+    Write-InfoLog ("CommandPath = {0}" -f $MyInvocation.MyCommand.Path)
+
+    try
+    {   
+        $ErrorActionPreference = "Stop"
+        #Check-PowerShellVersion
+        #Step
+        #Read environment variables comming from the build template (or the parm file)
+        Get-InputVariables(Split-Path -Parent $MyInvocation.MyCommand.Path)
+    
+        if($dropLocation -eq $null -or (Test-path $dropLocation) -eq $false)
+        {
+            Write-TerminatingErrorLog "Drop location is not valid."
+        }
+    
+        Get-BuildVersion
+
+        Write-InfoLog ("Build Starting : {0}" -f (Get-Date)) 
+
+        Write-InfoLog ("Creating output directories : {0}" -f (Get-Date)) 
+        Create-BuildFolders
+    }
+    catch
+    {
+        #Write-ErrorLog "Error occured while building."
+        Write-TerminatingErrorLog 'Error occured while building.'
+    }
+}
+
+function Find-StepIndex($steps = @(), [string]$step = '')
+{
+    $steps.IndexOf($step)
+}
+
+function Proceed-BuildAX([string]$executedStepsFileName)
+{
+    $contents = Get-Content -Path $executedStepsFileName
+    $lastStep = $contents.Get($contents.Length - 1)
+    $buildSteps = Get-BuildSteps
+    $lastStepIndex = Find-StepIndex $buildSteps $lastStep
+    Execute-Steps $buildSteps ($lastStepIndex + 1)
+}
+
 function Build-AX
 {
     #Step 1:Sync files
     Disable-VCS
     if($TFSIntegration -eq "True") 
     {
-        try
+        Setup-TFSIntegration
+
+        <#try
         {            
             Sync-Files
             Set-NextVersion
@@ -279,22 +482,27 @@ function Build-AX
                 Write-InfoLog ("Deleting workspace.") 
                 $d= $w.Delete()
             }
-        }
+        }#>
     }
     else
     {
         Set-NextVersion
     }
           
-    if ( $ApplicationDir -eq $null -or (Test-Path $ApplicationDir) -eq $false)
-    { Write-TerminatingErrorLog ("Wrong local project setting: {0}" -f $localProject)}
+    Validate-ApplicationDir
+
+    <#if ( $ApplicationDir -eq $null -or (Test-Path $ApplicationDir) -eq $false)
+    { Write-TerminatingErrorLog ("Wrong local project setting: {0}" -f $localProject)}#>
 
     #Step 
-    $script:modelLayerMap = @{}
+    Init-ModelLayerMap
+    #$script:modelLayerMap = @{}
     Create-ModelMap
     
     #Step 
-    Write-InfoLog ("                                                                 ") 
+    CombineAndExport-XPO
+
+    <#Write-InfoLog ("                                                                 ") 
     Write-InfoLog ("*****************************************************************") 
     Write-InfoLog ("****************COMBINE AND EXPORT XPOs**************************")
 
@@ -323,15 +531,17 @@ function Build-AX
         {
             Write-TerminatingErrorLog ("Unable to combine xpo for: {0}" -f $model.FullName)
         }
-    }
+    }#>
     
     # Now we've got all the references downloaded to local repo and it's time to install the needed MyGet packages and register them to GAC for AX to build.
     Create-PackagesConfig
     Install-Packages
     
-    Write-InfoLog '------------------------------------------>' 
+    Output-Models
+
+    <#Write-InfoLog '------------------------------------------>' 
     Write-InfoLog ('Models list: {0}' -f $models)
-    Write-InfoLog '<------------------------------------------'
+    Write-InfoLog '<------------------------------------------'#>
 
     Clean-Build
     
@@ -342,8 +552,10 @@ function Build-AX
     #Write-InfoLog ("Calling Set-AXModelStore: {0}" -f (Get-Date)) 
     #Set-AXModelStore -NoInstallMode -Database $sqlModelDatabase -Server $sqlServer -OutVariable out -Verbose
     #Write-InfoLog $out
+
+    Prepare-ModelLayerMap
     
-    $modelLayerMap = $modelLayerMap.GetEnumerator() | Sort-Object Name
+    <#$modelLayerMap = $modelLayerMap.GetEnumerator() | Sort-Object Name
     if($modelLayerMap -eq $null)
     {
         $modelLayerMap = @{}
@@ -351,14 +563,19 @@ function Build-AX
     if($modelLayerMap.GetType().Name -eq 'DictionaryEntry')
     {
         $modelLayerMap = @{ $modelLayerMap.Name = $modelLayerMap.Value}
-    }
+    }#>
 
     Create-ModelList   
     Install-DependentBinaries
     Import-BuildModels
 
+<<<<<<< HEAD
+    Ensure-AOTObjectsImported
+
+    <#$secodWaveOfImportPassed = $false
+=======
     $secodWaveOfImportPassed = $false
-    $verificationResult = $true
+>>>>>>> dd7d13c... Added Build verification logic as well as lots of cool auxiliary stuff.
     DO
     {
         #Now we can verify all objects have been imported
@@ -380,29 +597,41 @@ function Build-AX
             Write-Host 'Still some objects are missing after second wave of import' -ForegroundColor Yellow
             break
         }
-    } While ($verificationResult -eq $false)
+<<<<<<< HEAD
+    } While ($verificationResult -ne $true)#>
+
+    Print-FooterLines
+
+    <#Write-InfoLog ("*****************************************************************") 
+=======
+    } While ($verificationResult -ne $true)
 
     Write-InfoLog ("*****************************************************************") 
+>>>>>>> dd7d13c... Added Build verification logic as well as lots of cool auxiliary stuff.
     Write-InfoLog ("*****************************************************************")
-    Write-InfoLog ("                                                                 ")
+    Write-InfoLog ("                                                                 ")#>
            
     #Step 9
-    Write-InfoLog ("                                                                 ") 
+    Execute-CompileAX
+
+    <#Write-InfoLog ("                                                                 ") 
     Write-InfoLog ("*****************************************************************") 
     Write-InfoLog ("****************COMPILE AX***************************************") 
     Compile-Ax
     Write-InfoLog ("*****************************************************************") 
     Write-InfoLog ("*****************************************************************")
-    Write-InfoLog ("                                                                 ")
+    Write-InfoLog ("                                                                 ")#>
 
     #Step 10
-    Write-InfoLog ("                                                                 ") 
+    Execute-CollectBuild
+
+    <#Write-InfoLog ("                                                                 ") 
     Write-InfoLog ("*****************************************************************") 
     Write-InfoLog ("****************COLLECTING BUILD*********************************") 
     Collect-Build $models
     Write-InfoLog ("*****************************************************************") 
     Write-InfoLog ("*****************************************************************")
-    Write-InfoLog ("                                                                 ")
+    Write-InfoLog ("                                                                 ")#>
     
 	<#if ($NoCleanOnError -ne $true -or (Test-Path (join-path $currentLogFolder 'BuildErrors.err')) -ne $true)
     {
@@ -420,7 +649,9 @@ function Build-AX
     }#>
 }
 
-$ErrorActionPreference = "SilentlyContinue"
+Initialize-BuildScript
+
+<#$ErrorActionPreference = "SilentlyContinue"
 
 # Capture Initial script path in a script scoped variable as powershell is not smart enough to provide $Myinvocation variable in a function in a references script (i.e., Common.ps1)
 $script:startupDir = $MyInvocation.MyCommand.Path
@@ -460,7 +691,7 @@ catch
 {
     #Write-ErrorLog "Error occured while building."
     Write-TerminatingErrorLog 'Error occured while building.'
-}
+}#>
     
 try
 {   
