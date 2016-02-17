@@ -215,13 +215,21 @@ function Deploy-AX
     if ($InstallModelStore -eq $true)
     {
         $modelStoreLocation = (Join-Path $dropLocation 'application\appl')
+        # Copy modelstore to the local location
+        $localModelStoreLocation = Copy-Modelstores $modelStoreLocation
         # Select only the first *.axmodelstore file for import
-        $modelStore = @(gci -path $modelStoreLocation -filter *.axmodelstore)[0]
+        Write-Host "Local modelstore location: $localModelStoreLocation" -ForegroundColor Cyan
+        Start-Sleep -Seconds 5
+        $modelStore = @(gci -path $localModelStoreLocation -filter *.axmodelstore)[0]
         if ($modelStore -eq $null)
         {
-            Write-TerminatingErrorLog "Model store file was not found in the drop folder $modelStoreLocation"
+            Write-TerminatingErrorLog "Model store file was not found in the drop folder $localModelStoreLocation"
         }
         $modelStore = $modelStore.FullName
+
+        # It's critical to stop AOS before import modelstore
+        Stop-AOS
+
         Install-ModelStore $modelStore
     }
 

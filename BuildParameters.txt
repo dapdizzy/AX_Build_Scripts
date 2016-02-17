@@ -1,6 +1,6 @@
 Version=
-VCSFilePath=C:\Program Files\Microsoft Dynamics AX\60\Server\MicrosoftDynamicsAX\bin\Application\FAX\Definition\VCSDef.xml
-ApplicationSourceDir=C:\Program Files\Microsoft Dynamics AX\60\Server\MicrosoftDynamicsAX\bin\Application\FAX
+VCSFilePath=C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\bin\Application\Fax\Definition\VCSDef.xml
+ApplicationSourceDir=C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\bin\Application\Fax
 DropLocation=C:\AX\Build\Drop\Fax
 CompileAll=true
 CleanupAfterBuild=true

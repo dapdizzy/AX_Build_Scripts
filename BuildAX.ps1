@@ -356,9 +356,11 @@ function Build-AX
     Create-ModelList   
     Install-DependentBinaries
     Import-BuildModels
-
-    $secodWaveOfImportPassed = $false
-    $verificationResult = $true
+    
+    # Check imported AOT objects in the system against list of source controlled files in the local TFS Workspace
+    #$secodWaveOfImportPassed = $false
+    <#$verificationResult = $true
+    $importRetryCount = 0
     DO
     {
         #Now we can verify all objects have been imported
@@ -367,20 +369,24 @@ function Build-AX
         {
             Write-Host 'Now, everything is imported' -ForegroundColor Cyan
         }
-        elseif ($secodWaveOfImportPassed -ne $true)
+        elseif ($importRetryCount -eq 0)
+        #($secodWaveOfImportPassed -ne $true)
         {
             Write-Host 'Some objects were not imported after combined XPO import' -ForegroundColor Yellow
             Write-Host 'Attempting to import missed objects...' -ForegroundColor Yellow
             Import-MissedObjects
-            $secodWaveOfImportPassed = $true
+            $importRetryCount++
+            #$secodWaveOfImportPassed = $true
         }
         # We actually quit the loop here in case of a negative scenario
         else
         {
-            Write-Host 'Still some objects are missing after second wave of import' -ForegroundColor Yellow
+            Write-Host 'Still some objects are missing after attempting to reimport' -ForegroundColor Yellow
             break
         }
-    } While ($verificationResult -eq $false)
+    } While ($verificationResult -eq $false)#>
+
+    Verify-AOTObjects
 
     Write-InfoLog ("*****************************************************************") 
     Write-InfoLog ("*****************************************************************")
@@ -394,6 +400,9 @@ function Build-AX
     Write-InfoLog ("*****************************************************************") 
     Write-InfoLog ("*****************************************************************")
     Write-InfoLog ("                                                                 ")
+
+    # Verify AOT Objects once again after AX is fully compiled
+    Verify-AOTObjects
 
     #Step 10
     Write-InfoLog ("                                                                 ") 

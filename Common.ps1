@@ -884,9 +884,13 @@ function Copy-VSProjectsBinaries
 {
     # copy compiled dlls to Client & Server Bin dirs
     Kill-AX32Processes
-    Copy-Item "$vsProjBinFolder\*" $clientBinDir -Force -Recurse -ErrorAction SilentlyContinue 
+
+    robocopy "$vsProjBinFolder" "$clientBinDir" /s /z
+    #Copy-Item "$vsProjBinFolder\*" $clientBinDir -Force -Recurse -ErrorAction SilentlyContinue 
     Write-Infolog ("Compiled VS projected have been copied to $clientBinDir")
-    Copy-Item "$vsProjBinFolder\*" $serverBinDir -Force -Recurse -ErrorAction SilentlyContinue 
+    #iex "robocopy `"$vsProjBinFolder`" `"$serverBinDir`" /s /z"
+    robocopy "$vsProjBinFolder" "$serverBinDir" /s /z
+    #Copy-Item "$vsProjBinFolder\*" $serverBinDir -Force -Recurse -ErrorAction SilentlyContinue 
     Write-Infolog ("Compiled VS projected have been copied to $serverBinDir")
 }
 
@@ -1349,6 +1353,37 @@ function Import-MissedObjects([bool]$updateAOTObjectsTxt = $true)
     #{foreach ($line in (Get-Content $_)) { Import-XPO $line; }}
 }
 
+function Verify-AOTObjects
+{
+    $verificationResult = $true
+    $importRetryCount = 0
+    DO
+    {
+        #Now we can verify all objects have been imported
+        $verificationResult = Verify-AOTObjectsImported
+        if ($verificationResult -eq $true)
+        {
+            Write-Host 'Now, everything is imported' -ForegroundColor Cyan
+        }
+        elseif ($importRetryCount -eq 0)
+        #($secodWaveOfImportPassed -ne $true)
+        {
+            Write-Host 'Some objects were not imported after combined XPO import' -ForegroundColor Yellow
+            Write-Host 'Attempting to import missed objects...' -ForegroundColor Yellow
+            Import-MissedObjects
+            $importRetryCount++
+            #$secodWaveOfImportPassed = $true
+        }
+        # We actually quit the loop here in case of a negative scenario
+        else
+        {
+            Write-Host 'Still some objects are missing after attempting to reimport' -ForegroundColor Yellow
+            break
+        }
+    } While ($verificationResult -eq $false)
+    $verificationResult
+}
+
 function Import-AxCode([System.IO.FileSystemInfo]$model)
 {
     Delete-Axmodel $model.FullName
@@ -1598,14 +1633,141 @@ function Install-Packages
     Install-PackagesToGAC ($currentLogFolder)
 }
 
+function Copy-Folder([string]$srcFolder, [string]$dstFolder, [int]$timeoutSec = 3600)
+{
+    #robocopy "$scrFolder" "$dstFolder" /s /z | Out-Null
+
+    Write-Host "Source folder: $srcFolder" -ForegroundColor Green
+    Write-Host "Destination folder: $dstFolder" -ForegroundColor Green
+
+    $p = Start-Process robocopy -ArgumentList ('"{0}" "{1}" /s /z' -f $srcFolder, $dstFolder) -OutVariable out -PassThru
+    if ($p.WaitForExit($timeoutSec * 1000) -ne $true)
+    {
+        Write-ErrorLog ('robocopy was unable to complete in {0} seconds' -f $timeoutSec)
+        $p.Kill()
+    }
+    #Write-InfoLog "robocopy output`n: $out"
+    return $dstFolder
+}
+
+function Copy-Packages([string]$serverPackagesFolder)
+{
+    if (Is-PathLocal $serverPackagesFolder)
+    {
+        return $serverPackagesFolder
+    }
+
+    $dstPath = join-Path $currentLogFolder Packages
+
+    $ret = $dstPath
+
+    New-Item $dstPath -ItemType Directory | Out-Null
+
+    # Sleep for 1 seconds just to get things settle down after creating a new folder
+    Start-Sleep -Seconds 1
+
+    Copy-Folder $serverPackagesFolder $dstPath | Out-Null
+
+    #robocopy "$serverPackagesFolder" "$dstPath" /s /z
+
+    return $ret
+}
+
+function Copy-Modelstores([string]$serverPath)
+{
+    Write-Host "Server path: $serverPath" -ForegroundColor Blue
+
+    #$serverPathCopy = $serverPath
+
+    if (Is-PathLocal $serverPath)
+    {
+        return $serverPath
+    }
+
+    $localPath = Join-Path $currentLogFolder Modelstores
+    $returnValue = $localPath
+    New-Item $localPath -ItemType Directory | Out-Null
+
+    Write-Host "Modelstore local folder: $localPath" -ForegroundColor Cyan
+
+    if (Test-Path $localPath)
+    {
+        Write-Host "$localPath exists." -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "$localPath does not exist." -ForegroundColor Red
+    }
+
+    Write-Host "Server path again: $serverPath" -ForegroundColor Magenta
+    #Write-Host "Server path copy: $serverPathCopy" -ForegroundColor Yellow
+
+    #$serverPathCopy = 'Dummy'
+
+    (Copy-Folder $serverPath $localPath) | Out-Null
+
+    #robocopy "$serverPath" "$localPath" *.axmodelstore /s /z
+    return $returnValue
+}
+
+
+function Is-PathLocal([string]$path)
+{
+    if ($path.StartsWith("\\"))
+    {
+        return $false
+    }
+    return $true
+}
+
 function Install-PackagesToGAC($packagesFolder)
 {
     if (!$gacutilExe)
     {
-        $gacutilExe = 'C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe'
+        $gacutilExe = GetEnvironmentVariable('GacUtilPath')
+        #'C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\gacutil.exe'
     }
 
-    $dlls = gci -Path $packagesFolder -Include '*.dll' -Recurse # | Select-Object -Property FullName
+    $localPackagesFolder = Copy-Packages $packagesFolder
+
+    if ($localPackagesFolder -eq $null)
+    {
+        Write-Host "Local packages folder is null" -ForegroundColor Red
+    }
+    else
+    {
+        Write-Host "Local packages folder is not null" -ForegroundColor Green
+    }
+
+    Write-Host "Packages are now in the local location: $localPackagesFolder" -ForegroundColor Cyan
+    Write-Host "Let's go get them installed now, shall we?" -ForegroundColor Cyan
+    Start-Sleep -Seconds 5
+
+    if ($localPackagesFolder -eq $null)
+    {
+        Write-Host "Local packages folder is null" -ForegroundColor Red
+    }
+    else
+    {
+        Write-Host "Local packages folder is not null" -ForegroundColor Green
+    }
+
+    <#$p = Test-Path -Path $localPackagesFolder
+
+    if ($p -eq $true)
+    {
+        Write-Host "$localPackagesFolder exists" -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "$localPackagesFolder does not exist" -ForegroundColor Red
+    }#>
+
+    Start-Sleep -Seconds 5
+
+    #$localPackagesFolder = Join-Path $currentLogFolder Packages
+
+    $dlls = gci -Path "FileSystem::$localPackagesFolder\*" -Include *.dll -File -Recurse # | Select-Object -Property FullName
     ForEach ($dll in $dlls)
     {
         $p = Start-Process $gacutilExe -ArgumentList ('/i "{0}"' -f $dll.FullName) -OutVariable out -PassThru
@@ -2366,7 +2528,7 @@ function GET-TFS (
             $asm = [System.Reflection.Assembly]::LoadWithPartialName("{0}")
             Write-Host $asm.ToString()
             $t = $asm.GetType("Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer")
-            Write-Host $t.ToString() -foregroundcolor cyan
+            Write-Host $t.AssemblyQualifiedName -foregroundcolor cyan
             $this.GetService([{1}])
         ' -f $entry[1],$entry[2]
         $tfs | add-member scriptproperty $entry[0] $ExecutionContext.InvokeCommand.NewScriptBlock($scriptBlock)
@@ -2462,11 +2624,20 @@ function Sync-FilesToALabel
     
     try
     {
-        Write-InfoLog ("Remove old source controlled filed from {0}" -f $ApplicationSourceDir)
-        Remove-Item -Path "$ApplicationSourceDir\*" -Exclude "Definition" -Force -Recurse -ErrorAction SilentlyContinue 
+        $exclusionList = Remove-OldSourceControlledFiles $ApplicationSourceDir
+        #Write-InfoLog ("Remove old source controlled files from {0}" -f $ApplicationSourceDir)
+        #Remove-Item -Path "$ApplicationSourceDir\*" -Exclude "Definition" -Force -Recurse -ErrorAction SilentlyContinue 
         $w.Map($tfsWorkspace, $ApplicationSourceDir)
         Write-InfoLog ("Sync files started")
         $g = $w.Get($labelSpec, 1)
+
+        Write-Host "Setting the synched files to be ReadOnly" -ForegroundColor Cyan
+
+        # Set all AOT source controlled files synched to be ReadOnly except one's we've captured in the exclusion list
+        gci -Path $ApplicationSourceDir -Exclude $exclusionList -Include *.xpo, *.csproj, *.dynamicsproj -File -Recurse `
+        |% {sp $_ IsReadOnly $true}
+
+        Write-Host "Setting synched files to ReadOnly Done. $(Get-Date)" -ForegroundColor Cyan
        
         Write-InfoLog ("Sync files done") 
         Write-InfoLog (" ")
@@ -2479,10 +2650,31 @@ function Sync-FilesToALabel
     Write-InfoLog ("End Sync files {0}" -f (get-date))     
 }
 
+function Build-PendingChangesList([string]$sourcePath)
+{
+    $exclusionList = @()
+    $items = gci -Path "$sourcePath" -File -Recurse -Include *.xpo, *.csproj, *.dynamicsproj -ErrorAction SilentlyContinue `
+    |? {$_.IsReadOnly -eq $false}`
+    |% {$exclusionList += $_.Name}
+    $exclusionList
+}
+
+function Remove-OldSourceControlledFiles([string]$sourceDir)
+{
+    Write-Host "Removing old source controlled files from $sourceDir" -ForegroundColor Cyan
+    # First off: build exclusion list of cheked out files (pending changes) by looking ast the readonly property
+    $exclusionList = Build-PendingChangesList $sourceDir
+    Remove-Item -Path "$sourceDir" -Include *.xpo, *.csproj, *.dynamicsproj -Exclude $exclusionList -Force -Recurse -ErrorAction SilentlyContinue
+    $exclusionList
+}
+
 function Sync-Files
 {    
     Write-InfoLog ("Remove old source controlled filed from {0}" -f $ApplicationSourceDir)
-    Remove-Item -Path "$ApplicationSourceDir\*" -Exclude "Definition" -Force -Recurse -ErrorAction SilentlyContinue 
+
+    $exclusionList = Remove-OldSourceControlledFiles $ApplicationSourceDir
+
+    #Remove-Item -Path "$ApplicationSourceDir\*" -Exclude "Definition" -Force -Recurse -ErrorAction SilentlyContinue 
     
     # Sleep for 5 minuetes to provide the user enough time to ensure that the $ApplicationSourceDir folder has been cleared and no old (obsolete) xpos has left.
     #Start-Sleep -s 300
@@ -2507,24 +2699,59 @@ function Sync-Files
     $script:w = $tfs.VCS.CreateWorkspace($wName, $tfs.VCS.AuthenticatedUser)
     try
     {
+        $localWorkspaceFolder = Split-Path $ApplicationSourceDir -Parent
+
         Write-InfoLog('tfsWorkspace: {0}' -f $tfsWorkspace)
         Write-InfoLog('ApplicationSourceDir: {0}' -f $ApplicationSourceDir)
-        
-        if ($w.IsLocalPathMapped($ApplicationSourceDir))
+        Write-Infolog('Local TFS workspace folder: {0}' -f $localWorkspaceFolder)
+
+        <#$workspaces = $tfs.VCS.QueryWorkspaces($null, $null, $null, [Microsoft.TeamFoundation.VersionControl.Client.WorkspacePermissions]::Administer)
+        if ($workspaces -eq $null)
         {
-            $local:workspace = new-object Microsoft.TeamFoundation.VersionControl.Client.WorkingFolder ($tfsWorkspace, $ApplicationSourceDir)
+            Write-Host 'There are no workspaces defined' -ForegroundColor Red -BackgroundColor Black
+        }
+        else
+        {
+            Write-Host ('{0} workspaces have been found' -f $workspaces.Length) -ForegroundColor Cyan
+            foreach ($wspc in $workspaces)
+            {
+                [Microsoft.TeamFoundation.VersionControl.Client.WorkingFolder]$wspace = $wspc
+                Write-Host "Disambiguated display name: ${$wspc.DisambiguatedDisplayName}" -ForegroundColor Cyan
+            }
+        }#>
+
+        <#$workspace = $tfs.VCS.GetWorkspace($ApplicationSourceDir)
+        if ($workspace -ne $null)
+        {
+            Write-Host ('Seem like local workspace {0} is mapped to somthing in TFS, trying to delete mapping by TFS workspace' -f $ApplicationSourceDir) -ForegroundColor Cyan
+            $tfs.VCS.DeleteMapping($workspace)
+        }#>
+
+        <#if ($w.IsLocalPathMapped($localWorkspaceFolder))
+        {
             Write-InfoLog('Path {0} is locally mapped in TFS' -f $ApplicationSourceDir)
+            Write-Host ('Trying to remove mapping for the local workspace folder: {0}' -f $localWorkspaceFolder) -ForegroundColor Cyan
+            $local:workspace = new-object Microsoft.TeamFoundation.VersionControl.Client.WorkingFolder ($tfsWorkspace, $localWorkspaceFolder)
             $w.DeleteMapping($local:workspace)
         }
         else
         {
-            Write-InfoLog('Path {0} is not locally mapped in TFS' -f $ApplicationSourceDir)
-        }
+            Write-InfoLog('Path {0} is not locally mapped in TFS' -f $localWorkspaceFolder)
+        }#>
+
         $w.Map($tfsWorkspace, $ApplicationSourceDir)
         #$w.Map($wName, $ApplicationSourceDir)    
         
         Write-InfoLog ("Sync files started") 
         $g = $w.Get($versionSpec, 1)
+
+        Write-Host "Setting the synched files to be ReadOnly" -ForegroundColor Cyan
+
+        # Set all AOT source controlled files synched to be ReadOnly except one's we've captured in the exclusion list
+        gci -Path $ApplicationSourceDir -Exclude $exclusionList -Include *.xpo, *.csproj, *.dynamicsproj -File -Recurse `
+        |% {sp $_ IsReadOnly $true}
+
+        Write-Host "Setting synched files to ReadOnly Done. $(Get-Date)" -ForegroundColor Cyan
        
         Write-InfoLog ("Sync files done") 
         Write-InfoLog (" ")
