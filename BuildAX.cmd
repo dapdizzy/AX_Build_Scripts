@@ -1,0 +1,1 @@
+powershell .\BuildAX.ps1 > BuildAX.log

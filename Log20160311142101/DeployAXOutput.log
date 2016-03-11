@@ -1,3 +1,4 @@
+Input parameters
 SqlServer=MOW04DEV014
 SqlDatabase=Fax_Dev
 SqlModelDatabase=Fax_Dev_model
@@ -19,3 +20,20 @@ ApplicationSourceDir=C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\bin\Ap
 NoCleanOnError=true
 InstallModelStore=true
 SystemName=FAX
+ 
+ERROR: *********
+Error occured while deploying.
+****************
+ 
+gci : Cannot find path '\\MOW04DEV014\Drop\Fax\1.0.0.239' because it does not e
+xist.
+At C:\AX\BuildScripts\common.ps1:229 char:5
++     gci $dropRoot | Sort-Object CreationTime -Descending | Select-Object -Fir
+st  ...
++     ~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (\\MOW04DEV014\Drop\Fax\1.0.0.23 
+   9:String) [Get-ChildItem], ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetCh 
+   ildItemCommand
+ 
+DEPLOY Failed

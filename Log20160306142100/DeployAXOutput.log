@@ -1,0 +1,1747 @@
+Input parameters
+SqlServer=MOW04DEV014
+SqlDatabase=Fax_Dev
+SqlModelDatabase=Fax_Dev_model
+BuildLocation=\\MOW04DEV014\Drop\Fax\1.0.0.239
+ServerBinDir=C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\bin
+LogFolder=C:\AX\Deploy\Logs
+MsBuildDir=C:\Program Files (x86)\MSBuild\12.0\Bin
+CompileAll=true
+CompileCIL=true
+AOSname=AOS60$01
+UninstallOnly=false
+AOSNotOnDeployBox=false
+NoCleanOnError=
+TFSIntegration=true
+TFSUrl=https://mediamarkt.visualstudio.com/defaultcollection
+TFSWorkspace=$/FAX/FAX
+TFSLabel=
+ApplicationSourceDir=C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\bin\Application\FAX
+NoCleanOnError=true
+InstallModelStore=true
+SystemName=FAX
+Deploy Starting : 06.03.2016 14:21:05
+Creating output directories : 06.03.2016 14:21:05
+
+
+    Directory: C:\AX\Deploy\Logs
+
+
+Mode                LastWriteTime     Length Name                              
+----                -------------     ------ ----                              
+d----        06.03.2016     14:21            Logs03062016142105                
+Transcript started, output file is C:\AX\Deploy\Logs\Logs03062016142105\DeployLogs.log
+Start Get-ImportOverrideParameters : 06.03.2016 14:21:06
+Import override params:
+End Get-ImportOverrideParameters : 06.03.2016 14:21:06
+Printing all variables
+
+Name        : $
+Description : 
+Value       : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Value       : True
+Name        : ?
+Description : Status of last command
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : ReadOnly, AllScope
+Attributes  : {}
+
+
+Name        : ^
+Description : 
+Value       : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : AOSname
+Description : 
+Value       : AOS60$05
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : AOSNotOnDeployBox
+Description : 
+Value       : false
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : aosNumber
+Description : 
+Value       : 05
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : AOSRestartTimeout
+Description : 
+Value       : 60
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ApplicationSourceDir
+Description : 
+Value       : C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\bin\Applicat
+              ion\FAX
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Options     : None
+Value       : {}
+Name        : args
+Description : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Attributes  : {}
+
+
+Name        : ax32
+Description : 
+Value       : C:\Program Files (x86)\Microsoft Dynamics AX\60\\Client\Bin\ax32.
+              exe
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : AxAOS
+Description : 
+Value       : FAX@MOW04DEV014:2718
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : AxAOSInstance
+Description : 
+Value       : FAX
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : AxAOSServerName
+Description : 
+Value       : MOW04DEV014
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : axBuild
+Description : 
+Value       : C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\AXBuild.
+              exe
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : AxBuildDir
+Description : 
+Value       : C:\AX\BuildScripts
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : AxCompileAll
+Description : 
+Value       : true
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : c
+Description : 
+Value       : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : CleanOnly
+Description : 
+Value       : false
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : clientBinDir
+Description : 
+Value       : C:\Program Files (x86)\Microsoft Dynamics AX\60\\Client\Bin
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : clientLogDir
+Description : 
+Value       : C:\Users\pyatkov\Microsoft\Dynamics Ax\Log
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ClientRegistryPath
+Description : 
+Value       : HKCU:\SOFTWARE\Microsoft\Dynamics\6.0\Configuration
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : CombineTimeout
+Description : 
+Value       : 60
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : CompileAllTimeout
+Description : 
+Value       : 360
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : CompileCIL
+Description : 
+Value       : true
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : CompileCILTimeout
+Description : 
+Value       : 60
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ConfirmPreference
+Description : Dictates when confirmation should be requested. Confirmation is r
+              equested when the ConfirmImpact of the operation is equal to or g
+              reater than $ConfirmPreference. If $ConfirmPreference is None, ac
+              tions will only be confirmed when Confirm is specified.
+Value       : High
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ArgumentTypeConverterAttribute}
+
+
+Name        : ConsoleFileName
+Description : Name of the current console file
+Value       : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : ReadOnly, AllScope
+Attributes  : {}
+
+
+Name        : currentLogFolder
+Description : 
+Value       : C:\AX\Deploy\Logs\Logs03062016142105
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : DebugPreference
+Description : Dictates the action taken when a Debug message is delivered
+Value       : SilentlyContinue
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ArgumentTypeConverterAttribute}
+
+
+Name        : dependencyPath
+Description : 
+Value       : \\MOW04DEV014\Drop\Fax\1.0.0.239\Application
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : dropLocation
+Description : 
+Value       : \\MOW04DEV014\Drop\Fax\1.0.0.239
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : dynamicsAXModulesPath
+Description : 
+Value       : C:\Program Files\Microsoft Dynamics AX\60\ManagementUtilities\Mod
+              ules
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : dynamicsSetupRegKey
+Description : 
+Value       : HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamics\6.0\Setup
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : Error
+Description : 
+Value       : {}
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : Constant
+Attributes  : {}
+
+
+Name        : ErrorActionPreference
+Description : 
+Value       : Stop
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ErrorView
+Description : Dictates the view mode to use when displaying errors
+Value       : NormalView
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ExecutionContext
+Description : The run objects available to cmdlets
+Value       : System.Management.Automation.EngineIntrinsics
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : Constant, AllScope
+Attributes  : {}
+
+
+Name        : false
+Description : Boolean False
+Value       : False
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : Constant, AllScope
+Attributes  : {}
+
+
+Name        : FormatEnumerationLimit
+Description : Dictates the limit of enumeration on formatting IEnumerable objec
+              ts
+Value       : 4
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : HOME
+Description : Folder containing the current user's profile
+Value       : C:\Users\pyatkov
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : ReadOnly, AllScope
+Attributes  : {}
+
+
+Name        : Host
+Description : A reference to the host of the current runspace
+Value       : System.Management.Automation.Internal.Host.InternalHost
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : Constant, AllScope
+Attributes  : {}
+
+
+Name        : importOverrideParams
+Description : 
+Value       : {}
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ImportTimeout
+Description : 
+Value       : 60
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Options     : None
+Value       : System.Collections.ArrayList+ArrayListEnumeratorSimple
+Name        : input
+Description : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Attributes  : {}
+
+
+Name        : InstallModelStore
+Description : 
+Value       : true
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : labelsFolder
+Description : 
+Value       : label files
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : LogFolder
+Description : 
+Value       : C:\AX\Deploy\Logs
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Value       : 4096
+Name        : MaximumAliasCount
+Description : Maximum number of aliases allowed in a session
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ValidateRangeAttribute}
+
+
+Value       : 4096
+Name        : MaximumDriveCount
+Description : Maximum number of drives allowed in a session
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ValidateRangeAttribute}
+
+
+Value       : 256
+Name        : MaximumErrorCount
+Description : Maximum number of errors to retain in a session
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ValidateRangeAttribute}
+
+
+Value       : 4096
+Name        : MaximumFunctionCount
+Description : Maximum number of functions allowed in a session
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ValidateRangeAttribute}
+
+
+Name        : MaximumHistoryCount
+Description : Maximum number of history objects to retain in a session
+Value       : 4096
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ValidateRangeAttribute}
+
+
+Value       : 4096
+Name        : MaximumVariableCount
+Description : Maximum number of variables allowed in a session
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ValidateRangeAttribute}
+
+
+Name        : MsBuildPath
+Description : 
+Value       : C:\Program Files (x86)\MSBuild\12.0\Bin
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Options     : None
+Value       : System.Management.Automation.InvocationInfo
+Name        : MyInvocation
+Description : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Attributes  : {}
+
+
+Name        : NestedPromptLevel
+Description : Dictates what type of prompt should be displayed for the current 
+              nesting level
+Value       : 0
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : NoCleanOnError
+Description : 
+Value       : true
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Value       : 
+Description : References to the null variable always return the null value. Ass
+              ignments have no effect.
+Options     : None
+Name        : null
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Attributes  : {}
+
+
+Name        : OutputEncoding
+Description : The text encoding used when piping text to a native executable fi
+              le
+Value       : System.Text.ASCIIEncoding
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ArgumentTypeConverterAttribute}
+
+
+Name        : PID
+Description : Current process ID
+Value       : 221896
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : Constant, AllScope
+Attributes  : {}
+
+
+Name        : port
+Description : 
+Value       : 2718
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : PROFILE
+Description : 
+Value       : C:\Users\pyatkov\Documents\WindowsPowerShell\Microsoft.PowerShell
+              _profile.ps1
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ProgressPreference
+Description : Dictates the action taken when progress records are delivered
+Value       : Continue
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ArgumentTypeConverterAttribute}
+
+
+Options     : None
+Value       : {}
+Name        : PSBoundParameters
+Description : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Attributes  : {}
+
+
+Options     : None
+Value       : C:\AX\BuildScripts\DeployAX.ps1
+Name        : PSCommandPath
+Description : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Attributes  : {}
+
+
+Name        : PSCulture
+Description : Culture of the current Windows PowerShell session
+Value       : ru-RU
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : ReadOnly, AllScope
+Attributes  : {}
+
+
+Name        : PSDefaultParameterValues
+Description : Variable to hold all default <cmdlet:parameter, value> pairs
+Value       : {}
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ArgumentTypeConverterAttribute}
+
+
+Name        : PSEmailServer
+Description : Variable to contain the name of the email server. This can be use
+              d instead of the HostName parameter in the Send-MailMessage cmdle
+              t.
+Value       : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : PSHOME
+Description : Parent folder of the host application of the current runspace
+Value       : C:\Windows\System32\WindowsPowerShell\v1.0
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : Constant, AllScope
+Attributes  : {}
+
+
+Options     : None
+Value       : C:\AX\BuildScripts
+Name        : PSScriptRoot
+Description : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Attributes  : {}
+
+
+Name        : PSSessionApplicationName
+Description : AppName where the remote connection will be established
+Value       : wsman
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : PSSessionConfigurationName
+Description : Name of the session configuration which will be loaded on the rem
+              ote computer
+Value       : http://schemas.microsoft.com/powershell/Microsoft.PowerShell
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : PSSessionOption
+Description : Default session options for new remote sessions
+Value       : System.Management.Automation.Remoting.PSSessionOption
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : PSUICulture
+Description : UI culture of the current Windows PowerShell session
+Value       : en-US
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : ReadOnly, AllScope
+Attributes  : {}
+
+
+Name        : PSVersionTable
+Description : Version information for current Windows PowerShell session
+Value       : {PSVersion, WSManStackVersion, SerializationVersion, CLRVersion..
+              .}
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : Constant, AllScope
+Attributes  : {}
+
+
+Name        : PWD
+Description : 
+Value       : C:\AX\BuildScripts
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : scriptName
+Description : 
+Value       : DEPLOY
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : serverApplDir
+Description : 
+Value       : C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\bin\Applicat
+              ion\Appl\Standard
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ServerBinDir
+Description : 
+Value       : C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : serverLogDir
+Description : 
+Value       : C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Log
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ServerRegistryPath
+Description : 
+Value       : HKLM:\SYSTEM\CurrentControlSet\services\Dynamics Server\6.0
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : SetupRegistryPath
+Description : 
+Value       : HKLM:\SOFTWARE\Microsoft\Dynamics\6.0\Setup
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : ShellId
+Description : The ShellID identifies the current shell.  This is used by #Requi
+              res.
+Value       : Microsoft.PowerShell
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : Constant, AllScope
+Attributes  : {}
+
+
+Name        : sourceDir
+Description : 
+Value       : C:\Program Files\Microsoft Dynamics AX\60
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : SqlDatabase
+Description : 
+Value       : Fax_Dev
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : sqlModelDatabase
+Description : 
+Value       : Fax_Dev_model
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : SqlServer
+Description : 
+Value       : MOW04DEV014
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : StackTrace
+Description : 
+Value       : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : SyncTimeout
+Description : 
+Value       : 360
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : TFSIntegration
+Description : 
+Value       : true
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : TFSLabel
+Description : 
+Value       : 
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : TFSUrl
+Description : 
+Value       : https://mediamarkt.visualstudio.com/defaultcollection
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : TFSWorkspace
+Description : 
+Value       : $/FAX/FAX
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : transcriptStarted
+Description : 
+Value       : True
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : true
+Description : Boolean True
+Value       : True
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : Constant, AllScope
+Attributes  : {}
+
+
+Name        : VerbosePreference
+Description : Dictates the action taken when a Verbose message is delivered
+Value       : SilentlyContinue
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ArgumentTypeConverterAttribute}
+
+
+Name        : vsProjBinFolder
+Description : 
+Value       : \\MOW04DEV014\Drop\Fax\1.0.0.239\VSProjBin
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : WarningPreference
+Description : Dictates the action taken when a Warning message is delivered
+Value       : Continue
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {System.Management.Automation.ArgumentTypeConverterAttribute}
+
+
+Name        : WhatIfPreference
+Description : If true, WhatIf is considered to be enabled for all commands.
+Value       : False
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+
+Name        : x
+Description : 
+Value       : {Importing AxUtilLib, Importing AxUtilLib.PowerShell, Importing M
+              icrosoft.Dynamics.Administration, Importing Microsoft.Dynamics.AX
+              .Framework.Management}
+Visibility  : Public
+Module      : 
+ModuleName  : 
+Options     : None
+Attributes  : {}
+
+Begin: Register-SQLSnapIn: 06.03.2016 14:21:07
+End: Register-SQLSnapIn: 06.03.2016 14:21:15
+Starting Disable-VCS: 06.03.2016 14:21:15
+Done Disable-VCS: 06.03.2016 14:21:15
+Sync files 06.03.2016 14:21:16
+tfs.HasAuthenticated == False
+System.Management.Automation.LocalVariable
+Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer, Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Removing old source controlled files from C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\bin\Application\FAX
+Sync files started
+Setting the synched files to be ReadOnly
+Setting synched files to ReadOnly Done. 03/06/2016 14:22:48
+Sync files done
+ 
+End Sync files 06.03.2016 14:22:48
+Calling Set-AXModelStore: 06.03.2016 14:22:48
+The NoInstallMode has been successfully applied.
+The NoInstallMode has been successfully applied.
+ 
+Begin: Stop-AOS method : 3/6/2016 2:22:48 PM
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:22:48 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 3488
+StartMode : Auto
+State     : Running
+Status    : OK
+
+Stopping AOS
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:22:49 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 3488
+StartMode : Auto
+State     : Stop Pending
+Status    : Degraded
+
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:23:10 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 0
+StartMode : Auto
+State     : Stopped
+Status    : OK
+
+End: Stop-AOS method : 3/6/2016 2:23:10 PM
+ 
+ 
+Start Install-DependentBinaries: 3/6/2016 2:23:15 PM
+End Install-DependentBinaries: 3/6/2016 2:23:15 PM
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy for Windows                              
+-------------------------------------------------------------------------------
+
+  Started : Sun Mar 06 14:23:21 2016
+
+   Source : \\MOW04DEV014\Drop\Fax\1.0.0.239\VSProjBin\
+     Dest : C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\
+
+    Files : *.*
+	    
+  Options : *.* /S /COPY:DAT /Z /R:1000000 /W:30 
+
+------------------------------------------------------------------------------
+
+	                  11	\\MOW04DEV014\Drop\Fax\1.0.0.239\VSProjBin\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\AR\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\Connectors\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\CS\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\DA\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\DE\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\EditorComponents\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\ES\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\ET\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\FI\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\FR\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\Help\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\HU\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\IS\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\IT\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\JA\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\LT\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\LV\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\NB-NO\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\NL\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\PL\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\PT-BR\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\RU\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\SV\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\TH\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\VSProjBin\
+	*EXTRA Dir        -1	C:\Program Files (x86)\Microsoft Dynamics AX\60\Client\Bin\ZH-HANS\
+	  *EXTRA File 		  42.1 m	Ax32.exe
+	  *EXTRA File 		     938	Ax32.exe.config
+	  *EXTRA File 		   1.1 m	AxDebug.exe
+	  *EXTRA File 		   35488	AxHLink.exe
+	  *EXTRA File 		  329400	AXSearchSetup.exe
+	  *EXTRA File 		      77	AXSearchSetup.exe.config
+	  *EXTRA File 		  664258	AxSysAR.ktd
+	  *EXTRA File 		  729448	AxSysCS.ktd
+	  *EXTRA File 		  736806	AxSysDA.ktd
+	  *EXTRA File 		  825500	AxSysDE.ktd
+	  *EXTRA File 		  825506	AxSysDE-AT.ktd
+	  *EXTRA File 		  825760	AxSysDE-CH.ktd
+	  *EXTRA File 		  713556	AxSysEN-AU.ktd
+	  *EXTRA File 		  714314	AxSysEN-CA.ktd
+	  *EXTRA File 		  713598	AxSysEN-GB.ktd
+	  *EXTRA File 		  713750	AxSysEN-IE.ktd
+	  *EXTRA File 		  713588	AxSysEN-IN.ktd
+	  *EXTRA File 		  713582	AxSysEN-MY.ktd
+	  *EXTRA File 		  713556	AxSysEN-NZ.ktd
+	  *EXTRA File 		  713584	AxSysEN-SG.ktd
+	  *EXTRA File 		  713446	AxSysEN-US.ktd
+	  *EXTRA File 		  713558	AxSysEN-ZA.ktd
+	  *EXTRA File 		  798448	AxSysES.ktd
+	  *EXTRA File 		  800118	AxSysES-MX.ktd
+	  *EXTRA File 		  705766	AxSysET.ktd
+	  *EXTRA File 		  728422	AxSysFI.ktd
+	  *EXTRA File 		  804914	AxSysFR.ktd
+	  *EXTRA File 		  804914	AxSysFR-BE.ktd
+	  *EXTRA File 		  805040	AxSysFR-CA.ktd
+	  *EXTRA File 		  804914	AxSysFR-CH.ktd
+	  *EXTRA File 		  773916	AxSysHU.ktd
+	  *EXTRA File 		  711676	AxSysIS.ktd
+	  *EXTRA File 		  799896	AxSysIT.ktd
+	  *EXTRA File 		  799896	AxSysIT-CH.ktd
+	  *EXTRA File 		  537704	AxSysJA.ktd
+	  *EXTRA File 		  732472	AxSysLT.ktd
+	  *EXTRA File 		  724728	AxSysLV.ktd
+	  *EXTRA File 		  725982	AxSysNB-NO.ktd
+	  *EXTRA File 		  796368	AxSysNL.ktd
+	  *EXTRA File 		  796240	AxSysNL-BE.ktd
+	  *EXTRA File 		  772480	AxSysPL.ktd
+	  *EXTRA File 		  772588	AxSysPT-BR.ktd
+	  *EXTRA File 		  761842	AxSysRU.ktd
+	  *EXTRA File 		  731874	AxSysSV.ktd
+	  *EXTRA File 		  681578	AxSysTH.ktd
+	  *EXTRA File 		  434300	AxSysZH-HANS.ktd
+	  *EXTRA File 		  978608	AXUtilLib.dll
+	  *EXTRA File 		    1172	Coala2019.pem.cer
+	  *EXTRA File 		   59137	DefaultTemplate.11.1.xaml
+	  *EXTRA File 		  285376	DynamicsHelpViewer.exe
+	  *EXTRA File 		    3148	DynamicsHelpViewer.exe.config
+	  *EXTRA File 		   20088	elsteranmeldung.xsl
+	  *EXTRA File 		    2809	elsterbasis.xsl
+	  *EXTRA File 		  168640	EPWebSiteCompiler.exe
+	  *EXTRA File 		     144	EPWebSiteCompiler.exe.config
+	  *EXTRA File 		    6668	gdpdu-01-08-2002.dtd
+	  *EXTRA File 		    1911	geldbetraege.xsl
+	  *EXTRA File 		   54354	LicenseTermsAR.txt
+	  *EXTRA File 		   62972	LicenseTermsCS.txt
+	  *EXTRA File 		   65066	LicenseTermsDA.txt
+	  *EXTRA File 		   74828	LicenseTermsDE.txt
+	  *EXTRA File 		   60112	LicenseTermsEN.txt
+	  *EXTRA File 		   68578	LicenseTermsES.txt
+	  *EXTRA File 		   59650	LicenseTermsET.txt
+	  *EXTRA File 		   67670	LicenseTermsFI.txt
+	  *EXTRA File 		   74488	LicenseTermsFR.txt
+	  *EXTRA File 		   74094	LicenseTermsHU.txt
+	  *EXTRA File 		   63168	LicenseTermsIS.txt
+	  *EXTRA File 		   75482	LicenseTermsIT.txt
+	  *EXTRA File 		   33052	LicenseTermsJA.txt
+	  *EXTRA File 		   64312	LicenseTermsLT.txt
+	  *EXTRA File 		   67764	LicenseTermsLV.txt
+	  *EXTRA File 		   63604	LicenseTermsNB-NO.txt
+	  *EXTRA File 		   72226	LicenseTermsNL.txt
+	  *EXTRA File 		   78448	LicenseTermsPL.txt
+	  *EXTRA File 		   67972	LicenseTermsPT-BR.txt
+	  *EXTRA File 		   75638	LicenseTermsRU.txt
+	  *EXTRA File 		   64422	LicenseTermsSV.txt
+	  *EXTRA File 		   61574	LicenseTermsTH.txt
+	  *EXTRA File 		   20986	LicenseTermsZH-HANS.txt
+	  *EXTRA File 		   60104	Microsoft.CCI.CodeModel.dll
+	  *EXTRA File 		   57048	Microsoft.CCI.CodeModelToIL.dll
+	  *EXTRA File 		   34512	Microsoft.CCI.ILGenerator.dll
+	  *EXTRA File 		   94424	Microsoft.CCI.ILToCodeModel.dll
+	  *EXTRA File 		  238296	Microsoft.CCI.MetadataHelper.dll
+	  *EXTRA File 		  138968	Microsoft.CCI.MetadataModel.dll
+	  *EXTRA File 		  149720	Microsoft.CCI.MutableCodeModel.dll
+	  *EXTRA File 		  214760	Microsoft.CCI.MutableMetadataModel.dll
+	  *EXTRA File 		   78024	Microsoft.CCI.PdbReader.dll
+	  *EXTRA File 		   19656	Microsoft.CCI.PdbWriter.dll
+	  *EXTRA File 		  385736	Microsoft.CCI.PeReader.dll
+	  *EXTRA File 		  144584	Microsoft.CCI.PeWriter.dll
+	  *EXTRA File 		   45776	Microsoft.CCI.SourceModel.dll
+	  *EXTRA File 		   14088	Microsoft.Dynamics.AX.Application.HumanCapitalManagement.dll
+	  *EXTRA File 		   79624	Microsoft.Dynamics.AX.DemandPlanning.ExcelGeneration.dll
+	  *EXTRA File 		   40168	Microsoft.Dynamics.AX.Editor.Interop.dll
+	  *EXTRA File 		  293088	Microsoft.Dynamics.AX.Editor.UI.dll
+	  *EXTRA File 		   21232	Microsoft.Dynamics.AX.Ems.ExcelSimulation.dll
+	  *EXTRA File 		   62696	Microsoft.Dynamics.AX.ExchangeIntegration.dll
+	  *EXTRA File 		   66768	Microsoft.Dynamics.AX.Fim.dll
+	  *EXTRA File 		  244000	Microsoft.Dynamics.AX.Framework.Analytics.BIOutOfSyncResolver.dll
+	  *EXTRA File 		  459504	Microsoft.Dynamics.AX.Framework.Analytics.dll
+	  *EXTRA File 		     686	Microsoft.Dynamics.AX.Framework.Analytics.dll.config
+	  *EXTRA File 		   48896	Microsoft.Dynamics.AX.Framework.Client.Controls.dll
+	  *EXTRA File 		   27392	Microsoft.Dynamics.AX.Framework.CrossReference.dll
+	  *EXTRA File 		   56568	Microsoft.Dynamics.AX.Framework.DocumentRender.dll
+	  *EXTRA File 		   80128	Microsoft.Dynamics.AX.Framework.Expression.Model.dll
+	  *EXTRA File 		  124144	Microsoft.Dynamics.AX.Framework.Linq.Data.dll
+	  *EXTRA File 		   16136	Microsoft.Dynamics.AX.Framework.Linq.Data.Interface.dll
+	  *EXTRA File 		   16672	Microsoft.Dynamics.AX.Framework.Linq.Data.ManagedInteropLayer.dll
+	  *EXTRA File 		  269048	Microsoft.Dynamics.AX.Framework.Management.dll
+	  *EXTRA File 		   40184	Microsoft.Dynamics.AX.Framework.MetaModel.Design.dll
+	  *EXTRA File 		   51952	Microsoft.Dynamics.AX.Framework.MetaModel.dll
+	  *EXTRA File 		  221424	Microsoft.Dynamics.AX.Framework.OfficeAddin.dll
+	  *EXTRA File 		  651016	Microsoft.Dynamics.AX.Framework.OfficeAddin.DynamicsAX.dll
+	  *EXTRA File 		  308472	Microsoft.Dynamics.AX.Framework.OfficeAddin.Excel.dll
+	  *EXTRA File 		   63248	Microsoft.Dynamics.AX.Framework.OfficeAddin.SharePoint.dll
+	  *EXTRA File 		   35072	Microsoft.Dynamics.AX.Framework.OfficeAddin.XmlParts.dll
+	  *EXTRA File 		   40720	Microsoft.Dynamics.AX.Framework.TeamFoundationServerFacade.dll
+	  *EXTRA File 		   16640	Microsoft.Dynamics.AX.Framework.Tools.CodeMerge.dll
+	  *EXTRA File 		   19752	Microsoft.Dynamics.AX.Framework.Tools.CodeUpgradeTool.AssemblyReader.dll
+	  *EXTRA File 		  607512	Microsoft.Dynamics.AX.Framework.Tools.CodeUpgradeTool.Parser.dll
+	  *EXTRA File 		  267560	Microsoft.Dynamics.AX.Framework.Tools.CodeUpgradeTool.Parser.Pass2.dll
+	  *EXTRA File 		   81688	Microsoft.Dynamics.AX.Framework.Tools.CodeUpgradeTool.Rules.dll
+	  *EXTRA File 		  298768	Microsoft.Dynamics.AX.Framework.Workflow.Metadata.Wizard.dll
+	  *EXTRA File 		   1.1 m	Microsoft.Dynamics.AX.Framework.Workflow.Model.Design.dll
+	  *EXTRA File 		  975608	Microsoft.Dynamics.AX.Framework.Workflow.Model.dll
+	  *EXTRA File 		  118520	Microsoft.Dynamics.AX.Framework.Workflow.Runtime.dll
+	  *EXTRA File 		  828136	Microsoft.Dynamics.AX.Frameworks.Controls.dll
+	  *EXTRA File 		  905984	Microsoft.Dynamics.AX.Frameworks.ProductConfiguration.dll
+	  *EXTRA File 		   59606	Microsoft.Dynamics.AX.Frameworks.ProductConfiguration.xml
+	  *EXTRA File 		  325392	Microsoft.Dynamics.AX.Frameworks.ProductConfigurationServer.dll
+	  *EXTRA File 		  11.3 m	Microsoft.Dynamics.AX.ManagedInteropCore32.dll
+	  *EXTRA File 		  236784	Microsoft.Dynamics.AX.Planning.JobScheduling.dll
+	  *EXTRA File 		  112384	Microsoft.Dynamics.AX.Planning.JobSchedulingInterop.dll
+	  *EXTRA File 		   34552	Microsoft.Dynamics.AX.Planning.XMLOutputEngine.dll
+	  *EXTRA File 		  209120	Microsoft.Dynamics.AX.Xpp.ILGenerator.dll
+	  *EXTRA File 		  416480	Microsoft.Dynamics.AX.XppParser.dll
+	  *EXTRA File 		   39152	Microsoft.Dynamics.BusinessConnectorNet.dll
+	  *EXTRA File 		  152450	Microsoft.Dynamics.BusinessConnectorNet.xml
+	  *EXTRA File 		   58112	Microsoft.Dynamics.Commerce.Headquarters.RetailProxy.dll
+	  *EXTRA File 		 1034464	Microsoft.Dynamics.Commerce.Runtime.dll
+	  *EXTRA File 		  178448	Microsoft.Dynamics.Commerce.Runtime.Services.PricingEngine.dll
+	  *EXTRA File 		   10117	Microsoft.Dynamics.Commerce.Runtime.Services.PricingEngine.xml
+	  *EXTRA File 		  563367	Microsoft.Dynamics.Commerce.Runtime.xml
+	  *EXTRA File 		  600840	Microsoft.Dynamics.Compliance.InternalControlsManager.dll
+	  *EXTRA File 		   44256	Microsoft.Dynamics.DataContainer.dll
+	  *EXTRA File 		   39648	Microsoft.Dynamics.DynamicProxy.dll
+	  *EXTRA File 		  276712	Microsoft.Dynamics.Framework.Data.AX.dll
+	  *EXTRA File 		  148216	Microsoft.Dynamics.Framework.Deployment.BDCModel.dll
+	  *EXTRA File 		  379640	Microsoft.Dynamics.Framework.Deployment.Portal.dll
+	  *EXTRA File 		  191216	Microsoft.Dynamics.Framework.Deployment.Web.dll
+	  *EXTRA File 		   77056	Microsoft.Dynamics.Framework.Design.AXInteractions.dll
+	  *EXTRA File 		   85760	Microsoft.Dynamics.Framework.Design.Modeling.Interop.dll
+	  *EXTRA File 		   80152	Microsoft.Dynamics.Framework.Expression.AxExpressionBuilder.dll
+	  *EXTRA File 		   76016	Microsoft.Dynamics.Framework.MAPIWrapper.dll
+	  *EXTRA File 		   64760	Microsoft.Dynamics.Framework.MAPIWrapper32.dll
+	  *EXTRA File 		  167688	Microsoft.Dynamics.Framework.Portal.CommonControls.dll
+	  *EXTRA File 		   2.6 m	Microsoft.Dynamics.Framework.Portal.dll
+	  *EXTRA File 		  206592	Microsoft.Dynamics.Framework.Portal.SharePoint.dll
+	  *EXTRA File 		   56940	Microsoft.Dynamics.Framework.Reports.xml
+	  *EXTRA File 		  431352	Microsoft.Dynamics.Framework.ReportsDeployment.dll
+	  *EXTRA File 		   2.1 m	Microsoft.Dynamics.Framework.UI.Winforms.Controls.dll
+	  *EXTRA File 		   14600	Microsoft.Dynamics.Framework.Upgrade.BulkCopyLoader.dll
+	  *EXTRA File 		   23784	Microsoft.Dynamics.HierarchyViewerDAL.dll
+	  *EXTRA File 		  124136	Microsoft.Dynamics.HierarchyViewerWPF.dll
+	  *EXTRA File 		   74448	Microsoft.Dynamics.HLink.dll
+	  *EXTRA File 		  115440	Microsoft.Dynamics.IntegrationFramework.dll
+	  *EXTRA File 		   1.2 m	Microsoft.Dynamics.Kernel.Client.dll
+	  *EXTRA File 		  297216	Microsoft.Dynamics.Kernel.Client.UI.WPF.Controls.dll
+	  *EXTRA File 		   25328	Microsoft.Dynamics.Proxy.DataContainers.dll
+	  *EXTRA File 		   86752	Microsoft.Dynamics.Retail.Diagnostics.dll
+	  *EXTRA File 		   80112	Microsoft.Dynamics.Retail.Diagnostics.Sinks.dll
+	  *EXTRA File 		   37616	Microsoft.Dynamics.Retail.EventTraceProvider.dll
+	  *EXTRA File 		   40688	Microsoft.Dynamics.Retail.MatrixPivotGrid.dll
+	  *EXTRA File 		   30968	Microsoft.Dynamics.Retail.Notification.Contracts.dll
+	  *EXTRA File 		   16632	Microsoft.Dynamics.Retail.Notification.Proxy.dll
+	  *EXTRA File 		   39168	Microsoft.Dynamics.Retail.PaymentManager.Reference.dll
+	  *EXTRA File 		   60648	Microsoft.Dynamics.Retail.PaymentSDK.dll
+	  *EXTRA File 		   37640	Microsoft.Dynamics.Retail.PaymentSDK.Extensions.Desktop.dll
+	  *EXTRA File 		   67824	Microsoft.Dynamics.Retail.PaymentSDK.Portable.dll
+	  *EXTRA File 		   17664	Microsoft.Dynamics.Retail.PaymentTerminal.Contracts.dll
+	  *EXTRA File 		   17640	Microsoft.Dynamics.Retail.SDKManager.dll
+	  *EXTRA File 		   18160	Microsoft.Dynamics.Retail.SDKManager.Portable.dll
+	  *EXTRA File 		   19176	Microsoft.Dynamics.Retail.Security.dll
+	  *EXTRA File 		   89360	Microsoft.Dynamics.Retail.StoreConnect.MessageTreeControl.dll
+	  *EXTRA File 		   82192	Microsoft.Dynamics.Retail.StoreConnect.Request.AxHandler.dll
+	  *EXTRA File 		   50440	Microsoft.Dynamics.Retail.StoreConnect.Request.Base.dll
+	  *EXTRA File 		   21272	Microsoft.Dynamics.Retail.StoreConnect.Request.Compression.dll
+	  *EXTRA File 		   17680	Microsoft.Dynamics.Retail.StoreConnect.Request.Interface.dll
+	  *EXTRA File 		   60176	Microsoft.Dynamics.Retail.StoreConnect.Request.SQLHandler.dll
+	  *EXTRA File 		  522512	Microsoft.Dynamics.Retail.StoreConnect.TransAutomClient.dll
+	  *EXTRA File 		   75504	Microsoft.Dynamics.Retail.SynchLibrary.dll
+	  *EXTRA File 		   27368	Microsoft.Dynamics.Rfid.TypedProxy.dll
+	  *EXTRA File 		   34520	Microsoft.Dynamics.RfidProxy.dll
+	  *EXTRA File 		   1.6 m	Microsoft.Dynamics.SyncServices.Library.dll
+	  *EXTRA File 		   18664	Microsoft.Dynamics.SyncServices.Proxy.dll
+	  *EXTRA File 		   18176	Microsoft.Dynamics.SysImport.BaseTransformations.dll
+	  *EXTRA File 		   13528	Microsoft.Dynamics.SysImport.dll
+	  *EXTRA File 		  489664	Microsoft.Dynamics.Xml.dll
+	  *EXTRA File 		  438544	Microsoft.DynamicsOnline.DOClientProxy.CommerceService.dll
+	  *EXTRA File 		  337168	Microsoft.DynamicsOnline.DOClientProxy.dll
+	  *EXTRA File 		  123152	Microsoft.DynamicsOnline.DOClientProxy.PaymentService.dll
+	  *EXTRA File 		  284432	Microsoft.DynamicsOnline.DOClientProxy.SitesService.dll
+	  *EXTRA File 		  101648	Microsoft.DynamicsOnline.DOClientProxy.UserManagement.dll
+	  *EXTRA File 		  285472	Microsoft.Lync.Model.dll
+	  *EXTRA File 		 1031464	Microsoft.Msagl.dll
+	  *EXTRA File 		   2.0 m	Microsoft.Office.Project.Server.Library.dll
+	  *EXTRA File 		  322336	Microsoft.Office.Uc.dll
+	  *EXTRA File 		  153416	Microsoft.Practices.Prism.DLL
+	  *EXTRA File 		   18152	Microsoft.Practices.ServiceLocation.DLL
+	  *EXTRA File 		   2.4 m	Microsoft.Solver.Foundation.dll
+	  *EXTRA File 		    9216	MMS.Cloud.Ax.Model.dll
+	  *EXTRA File 		   24064	MMS.Cloud.Ax.Model.pdb
+	  *EXTRA File 		    6656	MMS.Cloud.Commands.FORD.dll
+	  *EXTRA File 		   36352	MMS.Cloud.Commands.LIPS.dll
+	  *EXTRA File 		   96256	MMS.Cloud.Impl.Clients.dll
+	  *EXTRA File 		    5632	MMS.Dynamics.Ax.BarcodeHelper.dll
+	  *EXTRA File 		   13824	MMS.Dynamics.Ax.BarcodeHelper.pdb
+	  *EXTRA File 		   10240	MMS.Dynamics.Ax.CheckStockService.dll
+	  *EXTRA File 		     671	MMS.Dynamics.Ax.CheckStockService.dll.config
+	  *EXTRA File 		   26112	MMS.Dynamics.Ax.CheckStockService.pdb
+	  *EXTRA File 		  499712	MMS_HubReport.Model.dll
+	  *EXTRA File 		  144416	SqmApi.dll
+	  *EXTRA File 		  135880	ste-net.dll
+	  *EXTRA File 		    8931	steuernummer.xsl
+	  *EXTRA File 		   25880	System.Composition.AttributedModel.dll
+	  *EXTRA File 		   21168	System.IO.dll
+	  *EXTRA File 		     134	System.IO.xml
+	  *EXTRA File 		  190664	System.Net.Http.dll
+	  *EXTRA File 		   22256	System.Net.Http.Extensions.dll
+	  *EXTRA File 		    5532	System.Net.Http.Extensions.xml
+	  *EXTRA File 		   21744	System.Net.Http.Primitives.dll
+	  *EXTRA File 		     151	System.Net.Http.Primitives.xml
+	  *EXTRA File 		   27376	System.Net.Http.WebRequest.dll
+	  *EXTRA File 		    4403	System.Net.Http.WebRequest.xml
+	  *EXTRA File 		  115425	System.Net.Http.xml
+	  *EXTRA File 		   22208	System.Runtime.dll
+	  *EXTRA File 		    2972	System.Runtime.xml
+	  *EXTRA File 		   34528	System.Threading.Tasks.dll
+	  *EXTRA File 		   33808	System.Threading.Tasks.xml
+	  *EXTRA File 		  192216	TaskRecorderBackgroundWorker.exe
+	  *EXTRA File 		  174430	ThirdPartyNotices.rtf
+	  *EXTRA File 		   56251	ustva.xsl
+	  *EXTRA File 		  428032	zxing.dll
+
+------------------------------------------------------------------------------
+
+               Total    Copied   Skipped  Mismatch    FAILED    Extras
+    Dirs :         1         0         1         0         0        26
+   Files :        11         0        11         0         0       245
+   Bytes :   939.1 k         0   939.1 k         0         0  122.22 m
+   Times :   0:00:00   0:00:00                       0:00:00   0:00:00
+
+   Ended : Sun Mar 06 14:23:21 2016
+Compiled VS projected have been copied to C:\Program Files (x86)\Microsoft Dynamics AX\60\\Client\Bin
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy for Windows                              
+-------------------------------------------------------------------------------
+
+  Started : Sun Mar 06 14:23:21 2016
+
+   Source : \\MOW04DEV014\Drop\Fax\1.0.0.239\VSProjBin\
+     Dest : C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\
+
+    Files : *.*
+	    
+  Options : *.* /S /COPY:DAT /Z /R:1000000 /W:30 
+
+------------------------------------------------------------------------------
+
+	                  11	\\MOW04DEV014\Drop\Fax\1.0.0.239\VSProjBin\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\Application\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\AR\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\Connectors\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\CS\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\DA\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\DE\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\ES\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\ET\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\FI\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\FR\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\HU\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\IS\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\IT\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\JA\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\Kti\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\logs\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\LT\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\LV\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\NB-NO\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\NL\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\PL\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\PT-BR\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\RU\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\STE\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\SV\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\TH\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\VSAssemblies\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\XppIL\
+	*EXTRA Dir        -1	C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin\ZH-HANS\
+	  *EXTRA File 		   32952	AOSEventFile.dll
+	  *EXTRA File 		  21.4 m	Ax32Serv.exe
+	  *EXTRA File 		   15699	Ax32Serv.exe.config
+	  *EXTRA File 		    2344	ax32serv.ini
+	  *EXTRA File 		   57512	AXBuild.exe
+	  *EXTRA File 		    1600	axctrnm.h
+	  *EXTRA File 		  663882	AxSysAR.ktd
+	  *EXTRA File 		  729084	AxSysCS.ktd
+	  *EXTRA File 		  736418	AxSysDA.ktd
+	  *EXTRA File 		  825098	AxSysDE.ktd
+	  *EXTRA File 		  825104	AxSysDE-AT.ktd
+	  *EXTRA File 		  825358	AxSysDE-CH.ktd
+	  *EXTRA File 		  713172	AxSysEN-AU.ktd
+	  *EXTRA File 		  713930	AxSysEN-CA.ktd
+	  *EXTRA File 		  713214	AxSysEN-GB.ktd
+	  *EXTRA File 		  713366	AxSysEN-IE.ktd
+	  *EXTRA File 		  713204	AxSysEN-IN.ktd
+	  *EXTRA File 		  713198	AxSysEN-MY.ktd
+	  *EXTRA File 		  713172	AxSysEN-NZ.ktd
+	  *EXTRA File 		  713200	AxSysEN-SG.ktd
+	  *EXTRA File 		  713446	AxSysEN-US.ktd
+	  *EXTRA File 		  713174	AxSysEN-ZA.ktd
+	  *EXTRA File 		  798078	AxSysES.ktd
+	  *EXTRA File 		  799748	AxSysES-MX.ktd
+	  *EXTRA File 		  705398	AxSysET.ktd
+	  *EXTRA File 		  728066	AxSysFI.ktd
+	  *EXTRA File 		  804502	AxSysFR.ktd
+	  *EXTRA File 		  804502	AxSysFR-BE.ktd
+	  *EXTRA File 		  804628	AxSysFR-CA.ktd
+	  *EXTRA File 		  804502	AxSysFR-CH.ktd
+	  *EXTRA File 		  773486	AxSysHU.ktd
+	  *EXTRA File 		  711336	AxSysIS.ktd
+	  *EXTRA File 		  799506	AxSysIT.ktd
+	  *EXTRA File 		  799506	AxSysIT-CH.ktd
+	  *EXTRA File 		  537354	AxSysJA.ktd
+	  *EXTRA File 		  732136	AxSysLT.ktd
+	  *EXTRA File 		  724326	AxSysLV.ktd
+	  *EXTRA File 		  725618	AxSysNB-NO.ktd
+	  *EXTRA File 		  795992	AxSysNL.ktd
+	  *EXTRA File 		  795860	AxSysNL-BE.ktd
+	  *EXTRA File 		  772104	AxSysPL.ktd
+	  *EXTRA File 		  772306	AxSysPT-BR.ktd
+	  *EXTRA File 		  761456	AxSysRU.ktd
+	  *EXTRA File 		  731512	AxSysSV.ktd
+	  *EXTRA File 		  681194	AxSysTH.ktd
+	  *EXTRA File 		  434000	AxSysZH-HANS.ktd
+	  *EXTRA File 		   15016	AXUtil.exe
+	  *EXTRA File 		  978608	AXUtilLib.dll
+	  *EXTRA File 		   30408	AXUtilLib.PowerShell.dll
+	  *EXTRA File 		   45056	Common.Logging.dll
+	  *EXTRA File 		   14336	Common.Logging.Log4Net1210.dll
+	  *EXTRA File 		  163328	Common.Logging.pdb
+	  *EXTRA File 		  205804	Common.Logging.xml
+	  *EXTRA File 		 749.4 m	Dynamics.Ax.Application.axpkg
+	  *EXTRA File 		  168640	EPWebSiteCompiler.exe
+	  *EXTRA File 		     144	EPWebSiteCompiler.exe.config
+	  *EXTRA File 		   35528	Interop.NetFwTypeLib.dll
+	  *EXTRA File 		  139528	libexpat.dll
+	  *EXTRA File 		  270336	log4net.dll
+	  *EXTRA File 		   1.3 m	log4net.xml
+	  *EXTRA File 		  167080	lua51.dll
+	  *EXTRA File 		   60104	Microsoft.CCI.CodeModel.dll
+	  *EXTRA File 		   57048	Microsoft.CCI.CodeModelToIL.dll
+	  *EXTRA File 		   34512	Microsoft.CCI.ILGenerator.dll
+	  *EXTRA File 		   94424	Microsoft.CCI.ILToCodeModel.dll
+	  *EXTRA File 		  238296	Microsoft.CCI.MetadataHelper.dll
+	  *EXTRA File 		  138968	Microsoft.CCI.MetadataModel.dll
+	  *EXTRA File 		  149720	Microsoft.CCI.MutableCodeModel.dll
+	  *EXTRA File 		  214760	Microsoft.CCI.MutableMetadataModel.dll
+	  *EXTRA File 		   78024	Microsoft.CCI.PdbReader.dll
+	  *EXTRA File 		   19656	Microsoft.CCI.PdbWriter.dll
+	  *EXTRA File 		  385736	Microsoft.CCI.PeReader.dll
+	  *EXTRA File 		  144584	Microsoft.CCI.PeWriter.dll
+	  *EXTRA File 		   45776	Microsoft.CCI.SourceModel.dll
+	  *EXTRA File 		  273632	Microsoft.Dynamics.Administration.dll
+	  *EXTRA File 		   14088	Microsoft.Dynamics.AX.Application.HumanCapitalManagement.dll
+	  *EXTRA File 		   79624	Microsoft.Dynamics.AX.DemandPlanning.ExcelGeneration.dll
+	  *EXTRA File 		   21232	Microsoft.Dynamics.AX.Ems.ExcelSimulation.dll
+	  *EXTRA File 		  244000	Microsoft.Dynamics.AX.Framework.Analytics.BIOutOfSyncResolver.dll
+	  *EXTRA File 		  459504	Microsoft.Dynamics.AX.Framework.Analytics.dll
+	  *EXTRA File 		     686	Microsoft.Dynamics.AX.Framework.Analytics.dll.config
+	  *EXTRA File 		   27392	Microsoft.Dynamics.AX.Framework.CrossReference.dll
+	  *EXTRA File 		   56568	Microsoft.Dynamics.AX.Framework.DocumentRender.dll
+	  *EXTRA File 		   80128	Microsoft.Dynamics.AX.Framework.Expression.Model.dll
+	  *EXTRA File 		  124144	Microsoft.Dynamics.AX.Framework.Linq.Data.dll
+	  *EXTRA File 		   16136	Microsoft.Dynamics.AX.Framework.Linq.Data.Interface.dll
+	  *EXTRA File 		   16672	Microsoft.Dynamics.AX.Framework.Linq.Data.ManagedInteropLayer.dll
+	  *EXTRA File 		   51952	Microsoft.Dynamics.AX.Framework.MetaModel.dll
+	  *EXTRA File 		  221424	Microsoft.Dynamics.AX.Framework.OfficeAddin.dll
+	  *EXTRA File 		  651016	Microsoft.Dynamics.AX.Framework.OfficeAddin.DynamicsAX.dll
+	  *EXTRA File 		   63248	Microsoft.Dynamics.AX.Framework.OfficeAddin.SharePoint.dll
+	  *EXTRA File 		   35072	Microsoft.Dynamics.AX.Framework.OfficeAddin.XmlParts.dll
+	  *EXTRA File 		  778512	Microsoft.Dynamics.AX.Framework.Services.BusinessAnalyzer.dll
+	  *EXTRA File 		   40720	Microsoft.Dynamics.AX.Framework.TeamFoundationServerFacade.dll
+	  *EXTRA File 		   16640	Microsoft.Dynamics.AX.Framework.Tools.CodeMerge.dll
+	  *EXTRA File 		   19752	Microsoft.Dynamics.AX.Framework.Tools.CodeUpgradeTool.AssemblyReader.dll
+	  *EXTRA File 		  607512	Microsoft.Dynamics.AX.Framework.Tools.CodeUpgradeTool.Parser.dll
+	  *EXTRA File 		  267560	Microsoft.Dynamics.AX.Framework.Tools.CodeUpgradeTool.Parser.Pass2.dll
+	  *EXTRA File 		   81688	Microsoft.Dynamics.AX.Framework.Tools.CodeUpgradeTool.Rules.dll
+	  *EXTRA File 		  975608	Microsoft.Dynamics.AX.Framework.Workflow.Model.dll
+	  *EXTRA File 		  118520	Microsoft.Dynamics.AX.Framework.Workflow.Runtime.dll
+	  *EXTRA File 		  828136	Microsoft.Dynamics.AX.Frameworks.Controls.dll
+	  *EXTRA File 		  325392	Microsoft.Dynamics.AX.Frameworks.ProductConfigurationServer.dll
+	  *EXTRA File 		   27692	Microsoft.Dynamics.AX.ManagementPackSupport.psd1
+	  *EXTRA File 		  236784	Microsoft.Dynamics.AX.Planning.JobScheduling.dll
+	  *EXTRA File 		  112384	Microsoft.Dynamics.AX.Planning.JobSchedulingInterop.dll
+	  *EXTRA File 		   34552	Microsoft.Dynamics.AX.Planning.XMLOutputEngine.dll
+	  *EXTRA File 		  112360	Microsoft.Dynamics.AX.ProxyGenerator.dll
+	  *EXTRA File 		  266472	Microsoft.Dynamics.AX.Services.Metadata.dll
+	  *EXTRA File 		  166136	Microsoft.Dynamics.AX.Services.Metadata.Service.dll
+	  *EXTRA File 		  178936	Microsoft.Dynamics.AX.Services.QueryService.dll
+	  *EXTRA File 		  146152	Microsoft.Dynamics.AX.Services.XppProxies.dll
+	  *EXTRA File 		   19176	Microsoft.Dynamics.AX.Xpp.AxShared.dll
+	  *EXTRA File 		  209120	Microsoft.Dynamics.AX.Xpp.ILGenerator.dll
+	  *EXTRA File 		  242392	Microsoft.Dynamics.AX.Xpp.Support.dll
+	  *EXTRA File 		   50432	Microsoft.Dynamics.BusinessAnalyzer.Foundation.PCL.dll
+	  *EXTRA File 		   58112	Microsoft.Dynamics.Commerce.Headquarters.RetailProxy.dll
+	  *EXTRA File 		 1034464	Microsoft.Dynamics.Commerce.Runtime.dll
+	  *EXTRA File 		  178448	Microsoft.Dynamics.Commerce.Runtime.Services.PricingEngine.dll
+	  *EXTRA File 		   10117	Microsoft.Dynamics.Commerce.Runtime.Services.PricingEngine.xml
+	  *EXTRA File 		  563367	Microsoft.Dynamics.Commerce.Runtime.xml
+	  *EXTRA File 		  276712	Microsoft.Dynamics.Framework.Data.AX.dll
+	  *EXTRA File 		  148224	Microsoft.Dynamics.Framework.Deployment.BDCModel.dll
+	  *EXTRA File 		  379640	Microsoft.Dynamics.Framework.Deployment.Portal.dll
+	  *EXTRA File 		  191224	Microsoft.Dynamics.Framework.Deployment.Web.dll
+	  *EXTRA File 		   14600	Microsoft.Dynamics.Framework.Upgrade.BulkCopyLoader.dll
+	  *EXTRA File 		  115440	Microsoft.Dynamics.IntegrationFramework.dll
+	  *EXTRA File 		   78616	Microsoft.Dynamics.IntegrationFramework.WebService.Process.dll
+	  *EXTRA File 		   86752	Microsoft.Dynamics.Retail.Diagnostics.dll
+	  *EXTRA File 		   80112	Microsoft.Dynamics.Retail.Diagnostics.Sinks.dll
+	  *EXTRA File 		   37616	Microsoft.Dynamics.Retail.EventTraceProvider.dll
+	  *EXTRA File 		   30968	Microsoft.Dynamics.Retail.Notification.Contracts.dll
+	  *EXTRA File 		   16632	Microsoft.Dynamics.Retail.Notification.Proxy.dll
+	  *EXTRA File 		   39168	Microsoft.Dynamics.Retail.PaymentManager.Reference.dll
+	  *EXTRA File 		   60648	Microsoft.Dynamics.Retail.PaymentSDK.dll
+	  *EXTRA File 		   37640	Microsoft.Dynamics.Retail.PaymentSDK.Extensions.Desktop.dll
+	  *EXTRA File 		   67824	Microsoft.Dynamics.Retail.PaymentSDK.Portable.dll
+	  *EXTRA File 		   17664	Microsoft.Dynamics.Retail.PaymentTerminal.Contracts.dll
+	  *EXTRA File 		   17640	Microsoft.Dynamics.Retail.SDKManager.dll
+	  *EXTRA File 		   18160	Microsoft.Dynamics.Retail.SDKManager.Portable.dll
+	  *EXTRA File 		   19176	Microsoft.Dynamics.Retail.Security.dll
+	  *EXTRA File 		   82192	Microsoft.Dynamics.Retail.StoreConnect.Request.AxHandler.dll
+	  *EXTRA File 		   50440	Microsoft.Dynamics.Retail.StoreConnect.Request.Base.dll
+	  *EXTRA File 		   21272	Microsoft.Dynamics.Retail.StoreConnect.Request.Compression.dll
+	  *EXTRA File 		   17680	Microsoft.Dynamics.Retail.StoreConnect.Request.Interface.dll
+	  *EXTRA File 		   60176	Microsoft.Dynamics.Retail.StoreConnect.Request.SQLHandler.dll
+	  *EXTRA File 		  494352	Microsoft.Dynamics.Retail.StoreConnect.TransAutomClient.dll
+	  *EXTRA File 		   75504	Microsoft.Dynamics.Retail.SynchLibrary.dll
+	  *EXTRA File 		   27368	Microsoft.Dynamics.Rfid.TypedProxy.dll
+	  *EXTRA File 		   34520	Microsoft.Dynamics.RfidProxy.dll
+	  *EXTRA File 		   69352	Microsoft.Dynamics.Setup.AosServer.dll
+	  *EXTRA File 		    2012	Microsoft.Dynamics.Setup.AosServer.InstallState
+	  *EXTRA File 		   18176	Microsoft.Dynamics.SysImport.BaseTransformations.dll
+	  *EXTRA File 		   13528	Microsoft.Dynamics.SysImport.dll
+	  *EXTRA File 		  689864	Microsoft.Dynamics.Xml.dll
+	  *EXTRA File 		  438544	Microsoft.DynamicsOnline.DOClientProxy.CommerceService.dll
+	  *EXTRA File 		  337168	Microsoft.DynamicsOnline.DOClientProxy.dll
+	  *EXTRA File 		  123152	Microsoft.DynamicsOnline.DOClientProxy.PaymentService.dll
+	  *EXTRA File 		  284432	Microsoft.DynamicsOnline.DOClientProxy.SitesService.dll
+	  *EXTRA File 		  101648	Microsoft.DynamicsOnline.DOClientProxy.UserManagement.dll
+	  *EXTRA File 		  153416	Microsoft.Practices.Prism.DLL
+	  *EXTRA File 		   18152	Microsoft.Practices.ServiceLocation.DLL
+	  *EXTRA File 		   2.1 m	Microsoft.ServiceBus.dll
+	  *EXTRA File 		   2.4 m	Microsoft.Solver.Foundation.dll
+	  *EXTRA File 		    6656	MMS.Dynamics.Ax.DimensionSet.dll
+	  *EXTRA File 		    6656	MMS.Dynamics.Ax.DimensionSet.dll.DLL
+	  *EXTRA File 		   19968	MMS.Dynamics.Ax.DimensionSet.dll.pdb
+	  *EXTRA File 		   19968	MMS.Dynamics.Ax.DimensionSet.pdb
+	  *EXTRA File 		   12960	reruc.dll
+	  *EXTRA File 		     287	SchedulingEngine.config
+	  *EXTRA File 		     876	Services.xml
+	  *EXTRA File 		  177696	SqmApi.dll
+	  *EXTRA File 		   81576	ste.dll
+	  *EXTRA File 		  144552	ste-net.dll
+	  *EXTRA File 		   25880	System.Composition.AttributedModel.dll
+	  *EXTRA File 		    1301	WebReferenceGenerator.config
+
+------------------------------------------------------------------------------
+
+               Total    Copied   Skipped  Mismatch    FAILED    Extras
+    Dirs :         1         0         1         0         0        29
+   Files :        11         0        11         0         0       176
+   Bytes :   939.1 k         0   939.1 k         0         0  823.53 m
+   Times :   0:00:00   0:00:00                       0:00:00   0:00:00
+
+   Ended : Sun Mar 06 14:23:21 2016
+Compiled VS projected have been copied to C:\Program Files\Microsoft Dynamics AX\60\Server\FAX\Bin
+Source folder: \\MOW04DEV014\Drop\Fax\1.0.0.239\Logs\Packages
+Destination folder: C:\AX\Deploy\Logs\Logs03062016142105\Packages
+Local packages folder is not null
+Packages are now in the local location: C:\AX\Deploy\Logs\Logs03062016142105\Packages
+Let's go get them installed now, shall we?
+Local packages folder is not null
+Begin: Start-AOS method : 3/6/2016 2:23:32 PM
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:23:32 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 0
+StartMode : Auto
+State     : Stopped
+Status    : OK
+
+Current AOS state : Stopped
+Starting AOS
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:23:33 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 141064
+StartMode : Auto
+State     : Start Pending
+Status    : OK
+
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:23:54 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 141064
+StartMode : Auto
+State     : Start Pending
+Status    : OK
+
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:24:14 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 141064
+StartMode : Auto
+State     : Start Pending
+Status    : OK
+
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:24:35 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 141064
+StartMode : Auto
+State     : Start Pending
+Status    : OK
+
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:24:55 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 141064
+StartMode : Auto
+State     : Start Pending
+Status    : OK
+
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:25:16 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 141064
+StartMode : Auto
+State     : Start Pending
+Status    : OK
+
+Calling Get-WmiObject Win32_Service: 3/6/2016 2:25:36 PM
+
+ExitCode  : 0
+Name      : AOS60$05
+ProcessId : 141064
+StartMode : Auto
+State     : Running
+Status    : OK
+
+End: Start-AOS method : 3/6/2016 2:25:37 PM
+ 
+Server path: \\MOW04DEV014\Drop\Fax\1.0.0.239\application\appl
+Modelstore local folder: C:\AX\Deploy\Logs\Logs03062016142105\Modelstores
+C:\AX\Deploy\Logs\Logs03062016142105\Modelstores exists.
+Server path again: \\MOW04DEV014\Drop\Fax\1.0.0.239\application\appl
+Source folder: \\MOW04DEV014\Drop\Fax\1.0.0.239\application\appl
+Destination folder: C:\AX\Deploy\Logs\Logs03062016142105\Modelstores
+ERROR: *********
+robocopy was unable to complete in 3600 seconds
+****************
+Local modelstore location: C:\AX\Deploy\Logs\Logs03062016142105\Modelstores
+ 
+ERROR: *********
+Model store file was not found in the drop folder C:\AX\Deploy\Logs\Logs03062016142105\Modelstores
+****************
+ 
+DEPLOY Failed
+Starting Enable-VCS: 3/6/2016 3:25:42 PM
+Done Enable-VCS: 3/6/2016 3:25:42 PM
+Transcript stopped, output file is C:\AX\Deploy\Logs\Logs03062016142105\DeployLogs.log
+
+

@@ -1,0 +1,180 @@
+Invocation command path: C:\AX\BuildScripts\BuildAX.ps1
+Common.ps1 path: C:\AX\BuildScripts\Common.ps1
+Common.ps1 path exists: True
+CommandPath = C:\AX\BuildScripts\BuildAX.ps1
+Input parameters
+Version=
+VCSFilePath=C:\Program Files\Microsoft Dynamics AX\60\Server\AXTest\bin\Application\FAX\Definition\VCSDef.xml
+ApplicationSourceDir=C:\Program Files\Microsoft Dynamics AX\60\Server\AXTest\bin\Application\FAX
+DropLocation=C:\AX\Build\Drop\Fax
+CompileAll=true
+CleanupAfterBuild=true
+CompileCIL=true
+TFSIntegration=true
+TFSUrl=https://mediamarkt.visualstudio.com/defaultcollection
+TFSLabelPrefix=FAX-{0}
+TFSWorkspace=$/FAX/FAX
+LabelComments=FAX Build-{0}
+SignKey=
+MsBuildDir=C:\Program Files (x86)\MSBuild\12.0\Bin
+RdlLanguage=
+NoCleanOnError=true
+BackupModelStoreFolder=C:\AX\Backup\Modelstore
+CleanBackupFileName=C:\Program Files\Microsoft SQL Server\MSSQL12.MSSQLSERVER\MSSQL\Backup\AXR3.bak
+Build Starting : 01.03.2016 19:47:05
+Creating output directories : 01.03.2016 19:47:05
+Transcript started, output file is C:\AX\Build\Drop\Fax\1.0.0.279\Logs\BuildLogs.log
+Start Get-ImportOverrideParameters : 01.03.2016 19:47:06
+Import override params:
+End Get-ImportOverrideParameters : 01.03.2016 19:47:06
+Printing all variables
+
+Name                           Value                                           
+----                           -----                                           
+$                                                                              
+?                              True                                            
+^                                                                              
+AOSname                        AOS60$04                                        
+aosNumber                      04                                              
+AOSRestartTimeout              60                                              
+ApplicationDir                 C:\Program Files\Microsoft Dynamics AX\60\Ser...
+ApplicationSourceDir           C:\Program Files\Microsoft Dynamics AX\60\Ser...
+args                           {}                                              
+ax32                           C:\Program Files (x86)\Microsoft Dynamics AX\...
+AxAOS                          AXTest@MOW04DEV014:2716                         
+AxAOSInstance                  AXTest                                          
+AxAOSServerName                MOW04DEV014                                     
+axBuild                        C:\Program Files\Microsoft Dynamics AX\60\Ser...
+AxBuildDir                     C:\AX\BuildScripts                              
+AxCompileAll                   true                                            
+backupModelStoreFolder         C:\AX\Backup\Modelstore                         
+c                                                                              
+CleanBackupFileName            C:\Program Files\Microsoft SQL Server\MSSQL12...
+CleanupAfterBuild              true                                            
+clientBinDir                   C:\Program Files (x86)\Microsoft Dynamics AX\...
+clientLogDir                   C:\Users\pyatkov\Microsoft\Dynamics Ax\Log      
+ClientRegistryPath             HKCU:\SOFTWARE\Microsoft\Dynamics\6.0\Configu...
+CombineTimeout                 60                                              
+commonps1Path                  C:\AX\BuildScripts\Common.ps1                   
+CompileAllTimeout              360                                             
+CompileCIL                     true                                            
+CompileCILTimeout              60                                              
+ConfirmPreference              High                                            
+ConsoleFileName                                                                
+currentLogFolder               C:\AX\Build\Drop\Fax\1.0.0.279\Logs             
+CurrentVersion                 1.0.0.279                                       
+DebugPreference                SilentlyContinue                                
+dependencyPath                 C:\Program Files\Microsoft Dynamics AX\60\Ser...
+dropLocation                   C:\AX\Build\Drop\Fax\1.0.0.279                  
+dynamicsAXModulesPath          C:\Program Files\Microsoft Dynamics AX\60\Man...
+dynamicsSetupRegKey            HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Dynamic...
+Error                          {}                                              
+ErrorActionPreference          Stop                                            
+ErrorView                      NormalView                                      
+ExecutionContext               System.Management.Automation.EngineIntrinsics   
+false                          False                                           
+FormatEnumerationLimit         4                                               
+HOME                           C:\Users\pyatkov                                
+Host                           System.Management.Automation.Internal.Host.In...
+importOverrideParams           {}                                              
+ImportTimeout                  60                                              
+input                          System.Collections.ArrayList+ArrayListEnumera...
+LabelComments                  FAX Build-{0}                                   
+labelsFolder                   label files                                     
+LocalProject                   C:\Program Files\Microsoft Dynamics AX\60\Ser...
+LogFolder                                                                      
+MaximumAliasCount              4096                                            
+MaximumDriveCount              4096                                            
+MaximumErrorCount              256                                             
+MaximumFunctionCount           4096                                            
+MaximumHistoryCount            4096                                            
+MaximumVariableCount           4096                                            
+MsBuildPath                    C:\Program Files (x86)\MSBuild\12.0\Bin         
+MyInvocation                   System.Management.Automation.InvocationInfo     
+NestedPromptLevel              0                                               
+NoCleanOnError                 true                                            
+null                                                                           
+OutputEncoding                 System.Text.ASCIIEncoding                       
+PID                            25100                                           
+port                           2716                                            
+PROFILE                        C:\Users\pyatkov\Documents\WindowsPowerShell\...
+ProgressPreference             Continue                                        
+PSBoundParameters              {}                                              
+PSCommandPath                  C:\AX\BuildScripts\BuildAX.ps1                  
+PSCulture                      ru-RU                                           
+PSDefaultParameterValues       {}                                              
+PSEmailServer                                                                  
+PSHOME                         C:\Windows\System32\WindowsPowerShell\v1.0      
+PSScriptRoot                   C:\AX\BuildScripts                              
+PSSessionApplicationName       wsman                                           
+PSSessionConfigurationName     http://schemas.microsoft.com/powershell/Micro...
+PSSessionOption                System.Management.Automation.Remoting.PSSessi...
+PSUICulture                    en-US                                           
+PSVersionTable                 {PSVersion, WSManStackVersion, SerializationV...
+PWD                            C:\AX\BuildScripts                              
+rdlLanguage                    EN-US                                           
+scriptName                     BUILD                                           
+serverApplDir                  C:\Program Files\Microsoft Dynamics AX\60\Ser...
+serverBinDir                   C:\Program Files\Microsoft Dynamics AX\60\Ser...
+serverLogDir                   C:\Program Files\Microsoft Dynamics AX\60\Ser...
+ServerRegistryPath             HKLM:\SYSTEM\CurrentControlSet\services\Dynam...
+SetupRegistryPath              HKLM:\SOFTWARE\Microsoft\Dynamics\6.0\Setup     
+ShellId                        Microsoft.PowerShell                            
+SignKey                                                                        
+sourceDir                      C:\Program Files\Microsoft Dynamics AX\60       
+sqlDatabase                    AXTest                                          
+sqlModelDatabase               AXTest_model                                    
+sqlServer                      MOW04DEV014                                     
+StackTrace                                                                     
+startupDir                     C:\AX\BuildScripts\BuildAX.ps1                  
+SyncTimeout                    360                                             
+TFSIntegration                 true                                            
+TFSLabelPrefix                 FAX-{0}                                         
+TFSUrl                         https://mediamarkt.visualstudio.com/defaultco...
+TFSWorkspace                   $/FAX/FAX                                       
+transcriptStarted              True                                            
+true                           True                                            
+VerbosePreference              SilentlyContinue                                
+Version                                                                        
+versionFile                    C:\AX\BuildScripts\version.txt                  
+vsProjBinFolder                C:\AX\Build\Drop\Fax\1.0.0.279\VSProjBin        
+WarningPreference              Continue                                        
+WhatIfPreference               False                                           
+x                              {Importing AxUtilLib, Importing AxUtilLib.Pow...
+Begin: Register-SQLSnapIn: 01.03.2016 19:47:08
+End: Register-SQLSnapIn: 01.03.2016 19:47:15
+Starting Disable-VCS: 01.03.2016 19:47:15
+Done Disable-VCS: 01.03.2016 19:47:16
+Remove old source controlled filed from C:\Program Files\Microsoft Dynamics AX\60\Server\AXTest\bin\Application\FAX
+Removing old source controlled files from C:\Program Files\Microsoft Dynamics AX\60\Server\AXTest\bin\Application\FAX
+Sync files 01.03.2016 19:47:21
+tfsUrl = https://mediamarkt.visualstudio.com/defaultcollection
+tfs.HasAuthenticated == False
+System.Management.Automation.LocalVariable
+Creating workspace AXBuild_ea50fd95-0fab-4a55-a2b3-83a0c9434f25
+Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer, Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer, Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer, Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Calling CreateWorkspace with the following arguments: workspaceName = AXBuild_ea50fd95-0fab-4a55-a2b3-83a0c9434f25, owner = Dmitry A Pyatkov
+Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer, Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer, Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+tfsWorkspace: $/FAX/FAX
+ApplicationSourceDir: C:\Program Files\Microsoft Dynamics AX\60\Server\AXTest\bin\Application\FAX
+Local TFS workspace folder: C:\Program Files\Microsoft Dynamics AX\60\Server\AXTest\bin\Application
+ 
+ERROR: *********
+Exception while mapping TFS workspace: Exception calling "Map" with "2" argument(s): "The working folder C:\Program Files\Microsoft Dynamics AX\60\Server\AXTest\bin\Application is already in use by the workspace MOW04DEV014_AXWORKSPACE0;Dmitry A Pyatkov on computer MOW04DEV014."
+****************
+ 
+BUILD Failed
+Deleting workspace.
+Starting Enable-VCS: 01.03.2016 19:47:27
+Done Enable-VCS: 01.03.2016 19:47:27
+Transcript stopped, output file is C:\AX\Build\Drop\Fax\1.0.0.279\Logs\BuildLogs.log
+
+

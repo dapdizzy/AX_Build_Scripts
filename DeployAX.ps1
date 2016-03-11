@@ -28,10 +28,10 @@ function Create-DeployCompleted
     $axbuildError | Out-File (join-path $currentLogFolder "DeployCompleted.txt") -Encoding Default 
 }
 
-function Get-InputVariables ($homePath)
+function Get-InputVariables ($homePath, $fileName = "DeployParameters.txt")
 {
     $script:AxBuildDir = $homePath
-    $RunDeployParmFile = (Join-Path $AxBuildDir "DeployParameters.txt")
+    $RunDeployParmFile = (Join-Path $AxBuildDir $fileName)
     Write-InfoLog "Input parameters"        
     if ((Test-Path $RunDeployParmFile) -ne $false)
     {
@@ -51,19 +51,55 @@ function Get-InputVariables ($homePath)
             }
         }       
     }   
-    $script:SqlServer               = GetEnvironmentVariable("SqlServer")
-    $script:SqlDatabase             = GetEnvironmentVariable("SqlDatabase")
-    $script:sqlModelDatabase        = GetEnvironmentVariable("SqlModelDatabase")
+    if ($script:SqlServer -eq $null -or [string]::IsNullOrEmpty($script:SqlServer))
+    {
+        $script:SqlServer           = GetEnvironmentVariable("SqlServer")
+    }
+    if ($script:SqlDatabase -eq $null -or [string]::isNullOrEmpty($script:SqlDatabase))
+    {
+        $script:SqlDatabase         = GetEnvironmentVariable("SqlDatabase")
+    }
+    if ($script:sqlModelDatabase -eq $null -or [string]::IsNullOrEmpty($script:sqlModelDatabase))
+    {
+        $script:sqlModelDatabase    = GetEnvironmentVariable("SqlModelDatabase")
+    }
     $script:dropLocation            = GetEnvironmentVariable("BuildLocation")
-    $script:ServerBinDir            = GetEnvironmentVariable("ServerBinDir")
+    # Assume this is 'drop root' (the folder containing concrete build folders) folder in case this is not a 'build folder'
+    if ((Is-BuildFolder $script:dropLocation) -ne $true)
+    {
+        # Override the value with the latest successful build folder found
+        $script:dropLocation = (Get-LatestBuildFolder $script:dropLocation).FullName
+    }
+    if ($script:ServerBinDir -eq $null -or [string]::isNullOrEmpty($script:serverBinDir))
+    {
+        $script:ServerBinDir        = GetEnvironmentVariable("ServerBinDir")
+    }
     $script:LogFolder               = GetEnvironmentVariable("LogFolder")
-    $script:AOSname                 = GetEnvironmentVariable("AOSname")
+    if ($script:LogFolder -eq $null -or [string]::IsNullOrEmpty($script:LogFolder))
+    {
+        # Override with active AX configuration client log dir in case not defined
+        $script:LogFolder = $script:clientLogDir
+    }
+    # Override variable only in case it is not defined or null
+    if ($script:AOSname -eq $null -or [string]::IsNullOrEmpty($script:AOSname))
+    {
+        $script:AOSname             = GetEnvironmentVariable("AOSname")
+    }
     $script:AxCompileAll            = GetEnvironmentVariable("CompileAll")
     $script:CompileCIL              = GetEnvironmentVariable("CompileCIL")
     $script:TFSIntegration          = GetEnvironmentVariable("TFSIntegration")
     $script:TFSUrl                  = GetEnvironmentVariable("TFSUrl")
     $script:TFSLabel                = GetEnvironmentVariable("TFSLabel")
     $script:ApplicationSourceDir    = GetEnvironmentVariable("ApplicationSourceDir")
+    if ($script:ApplicationSourceDir -eq $null -or [string]::isNullOrEmpty($script:ApplicationSourceDir))
+    {
+        $local:systemName = GetEnvironmentVariable("SystemName")
+        $script:ApplicationSourceDir = Join-Path $script:ServerBinDir "Application\$local:systemName"
+        if (Test-Path $script:ApplicationSourceDir -ne $true)
+        {
+            New-Item -Path $script:ApplicationSourceDir -ItemType Directory -Confirm
+        }
+    }
     $script:CleanOnly               = GetEnvironmentVariable("UninstallOnly")
     $script:AOSNotOnDeployBox       = GetEnvironmentVariable("AOSNotOnDeployBox")
     $script:NoCleanOnError          = GetEnvironmentVariable("NoCleanOnError")
@@ -227,7 +263,7 @@ function Deploy-AX
         }
         $modelStore = $modelStore.FullName
 
-        # It's critical to stop AOS before import modelstore
+        # It's critical to stop AOS before import 
         Stop-AOS
 
         Install-ModelStore $modelStore

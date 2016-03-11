@@ -1,0 +1,11 @@
+BuildLocation=\\MOW04DEV014\Drop\Fax
+CompileAll=true
+CompileCil=true
+InstallModelStore=true
+MsBuildDir=C:\Program Files\(x86)\MSBuild\12.0\Bin
+NoCleanOnError=true
+SystemName=FAX
+TFSIntegration=true
+TFSURL=https:\\mediamarkt.visualstudio.com\defaultcollection
+TFSWorkspace=$FAX\FAX
+UninstallOnly=false

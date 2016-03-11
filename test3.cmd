@@ -1,0 +1,1 @@
+powershell .\test2.ps1 > test2.log

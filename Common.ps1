@@ -213,6 +213,32 @@ function Create-BuildFolders
     $script:vsProjBinFolder = join-path $dropLocation "VSProjBin"
 }
 
+function Output-LatestBuildInfo([string]$dropFolder)
+{
+    Write-Output (Get-LatestBuildFolder $dropFolder).Name
+    Write-Output (Get-LastSuccessfulBuild $dropFolder).Name
+}
+
+function Get-LastSuccessfulBuild([string]$dropRoot)
+{
+    gci $dropRoot | Sort-Object CreationTime -Descending |? { Test-Path (Join-Path $_.FullName 'BuildCompleted.txt') } | Select-Object -First 1
+}
+
+function Get-LatestBuildFolder([string]$dropRoot)
+{
+    gci $dropRoot | Sort-Object CreationTime -Descending | Select-Object -First 1
+}
+
+function Is-BuildFolder([string]$folder)
+{
+    if ((Test-Path -Path (Join-Path $folder 'BuildCompleted.txt')) `
+    -or (Test-Path -Path (Join-Path $folder 'BuildErrors.err')))
+    {
+        return $true
+    }
+    return $false
+}
+
 ############################################################################################
 #COMMON AX FUNCTIONS
 ############################################################################################
@@ -343,6 +369,11 @@ function Read-AXClientConfiguration
 	$Path = Join-Path $Path (Get-ItemProperty (get-item ($Path)).PSPath).Current
 	$script:clientBinDir = (Get-ItemProperty (get-item ($Path)).PSPath).bindir.TrimEnd('\')
 	$script:clientLogDir = (Get-ItemProperty (get-item ($Path)).PSPath).logdir.TrimEnd('\')
+    if ($script:LogFolder -eq $null -or [string]::IsNullOrEmpty($script:LogFolder))
+    {
+        # Override with active AX configuration log placement in case not defined
+        $script:LogFolder = $script:clientLogDir
+    }
 	$script:AxAOS 	  	 = (Get-ItemProperty (get-item ($Path)).PSPath).aos2
 	$script:clientLogDir = [System.Environment]::ExpandEnvironmentVariables("$clientLogDir")    
 	$script:clientBinDir = [System.Environment]::ExpandEnvironmentVariables("$clientBinDir")    
@@ -378,7 +409,7 @@ function Read-AxServerConfiguration
     		$InstanceName = (Get-ItemProperty (get-item ($subPath)).PSPath).InstanceName
             if ( ($AxAOSInstance -eq $null) -or ($InstanceName -eq $AxAOSInstance) -or ($portNumber -eq $port))
     		{
-    			$AOSName = $script:AOSname = "AOS60`${0}" -f $item.PSChildName #The ` character makes powershell know that the next character is to be handled as a part of the string
+    			$script:AOSName = $script:AOSname = "AOS60`${0}" -f $item.PSChildName #The ` character makes powershell know that the next character is to be handled as a part of the string
                 $script:aosNumber = "{0}" -f $item.PSChildName
     			$CurrentServerConfig =  (Get-ItemProperty (get-item ($subPath)).PSPath).current
     		    $Path = Join-Path $subPath $CurrentServerConfig
@@ -1319,6 +1350,7 @@ function Create-AOTObjectsTxt([System.IO.FileSystemInfo]$model)
     $basePath = $model.Directory.FullName
     $fileName = ('{0}-AOTObjects.txt' -f $model.Directory.Name)
     $fullFileName = (Join-Path $clientLogDir $fileName)
+    Write-host "Full AOT objects file name: $fullFileName" -ForegroundColor Cyan
     <#gci -Path $basePath -File -Recurse -Include *.xpo -ErrorAction SilentlyContinue `
     |% {gc $_.FullName -totalcount 20} |? {$_ -match 'Microsoft Dynamics AX \w+: (?<objectName>\w+) \w+$'} |% {$Matches['objectName']} `
     | Out-File -FilePath $fullFileName -Encoding ascii -ErrorAction Continue#>
@@ -1326,6 +1358,8 @@ function Create-AOTObjectsTxt([System.IO.FileSystemInfo]$model)
     |% {$_.FullName.Remove(0, $basePath.Length)} `
     | Out-File -FilePath $fullFileName -Encoding ascii -ErrorAction Continue # -Append
     Write-Host "Created $fullfileName" -ForegroundColor Cyan
+    Write-Host ''
+    Write-Host ''
 }
 
 function Import-MissedObjects([bool]$updateAOTObjectsTxt = $true)
@@ -2618,6 +2652,7 @@ function Sync-FilesToALabel
         Write-InfoLog ("Calling CreateWorkspace with the following arguments: workspaceName = {0}, owner = {1}" -f $wName, $tfs.VCS.AuthenticatedUser)
     
         $script:w = $tfs.VCS.CreateWorkspace($wName, $tfs.VCS.AuthenticatedUser)
+        $w.Map($tfsWorkspace, $ApplicationSourceDir)
     }
 
     #$script:w = $tfs.VCS.GetWorkspace($ApplicationSourceDir)
@@ -2627,7 +2662,8 @@ function Sync-FilesToALabel
         $exclusionList = Remove-OldSourceControlledFiles $ApplicationSourceDir
         #Write-InfoLog ("Remove old source controlled files from {0}" -f $ApplicationSourceDir)
         #Remove-Item -Path "$ApplicationSourceDir\*" -Exclude "Definition" -Force -Recurse -ErrorAction SilentlyContinue 
-        $w.Map($tfsWorkspace, $ApplicationSourceDir)
+        # Try to move this call to workspace creation block upwards
+        #$w.Map($tfsWorkspace, $ApplicationSourceDir)
         Write-InfoLog ("Sync files started")
         $g = $w.Get($labelSpec, 1)
 
@@ -2812,6 +2848,16 @@ function Disable-VCS
     Write-InfoLog ("Done Disable-VCS: {0}" -f (Get-Date))
 }
 
+
+function Clear-TFSCache
+{
+    $pathTemplate = "C:\Users\{0}\AppData\Local\Microsoft\Team Foundation\{1}\Cache\*"
+    $versions = @("3.0", "5.0")
+    foreach ($version in $versions)
+    {
+        Remove-Item -Path ($pathTemplate -f [Environment]::UserName, $version) -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
 
 ############################################################################################
 #END TFS

@@ -311,7 +311,7 @@ function Build-AX
         
         $modelHash.Add($modelName, $AxLayer)
         Combine-Xpos $model.Directory
-        Create-AOTObjectsTxt $model
+        Create-AOTObjectsTxt $model | Out-Null
         $ret = Check-CombineXpoError
         if ($ret -eq $true)
         {
@@ -401,6 +401,8 @@ function Build-AX
     Write-InfoLog ("*****************************************************************")
     Write-InfoLog ("                                                                 ")
 
+    # Recreate AOT Objects once again to be sure enough
+    Create-AOTObjectsTxt $model | Out-Null
     # Verify AOT Objects once again after AX is fully compiled
     Verify-AOTObjects
 
