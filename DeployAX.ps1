@@ -68,7 +68,7 @@ function Get-InputVariables ($homePath, $fileName = "DeployParameters.txt")
     if ((Is-BuildFolder $script:dropLocation) -ne $true)
     {
         # Override the value with the latest successful build folder found
-        $script:dropLocation = (Get-LatestBuildFolder $script:dropLocation).FullName
+        $script:dropLocation = (Get-LastSuccessfulBuild $script:dropLocation).FullName
     }
     if ($script:ServerBinDir -eq $null -or [string]::isNullOrEmpty($script:serverBinDir))
     {

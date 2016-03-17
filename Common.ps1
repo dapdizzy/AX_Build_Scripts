@@ -366,6 +366,7 @@ function Start-AOS
 function Read-AXClientConfiguration
 {
     $Path = $clientRegistryPath 
+    Write-Output "Path: $path"
 	$Path = Join-Path $Path (Get-ItemProperty (get-item ($Path)).PSPath).Current
 	$script:clientBinDir = (Get-ItemProperty (get-item ($Path)).PSPath).bindir.TrimEnd('\')
 	$script:clientLogDir = (Get-ItemProperty (get-item ($Path)).PSPath).logdir.TrimEnd('\')
@@ -1082,7 +1083,7 @@ function CreateSpecificXPOs([string]$xpoFileName)
         }
         if ($shouldDecide -eq $true -and $line -match '; Microsoft Dynamics AX')
         {
-            if ($line -match 'Table : Sys' -or $line -match 'EventInbox') # i.e., a System table
+            if ($line -match 'Table : Sys' -or $line -match 'EventInbox' -or $line -match 'Table : DirPartyTable') # i.e., a System table
             {
                 if (!$sysTabWriter)
                 {
