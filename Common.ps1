@@ -34,6 +34,20 @@ function Get-OverrideParameters
         }       
     }   
     
+    <#$script:CompileCILTimeout        = [int](Set-Parameter "CompileCILTimeout" "60" )
+    $script:SyncTimeout              = [int](Set-Parameter "SyncTimeout" "60" )
+    $script:ImportTimeout            = [int](Set-Parameter "ImportTimeout" "60" )
+    $script:CombineTimeout           = [int](Set-Parameter "CombineTimeout" "60" )
+    $script:AOSRestartTimeout        = [int](Set-Parameter "AOSRestartTimeout" "60" )
+    $script:CompileAllTimeout        = [int](Set-Parameter "CompileAllTimeout" "360" )
+    $script:SetupRegistryPath        = (Set-Parameter "SetupRegistryPath" "HKLM:\SOFTWARE\Microsoft\Dynamics\6.0\Setup" )
+    $script:ServerRegistryPath       = (Set-Parameter "ServerRegistryPath" "HKLM:\SYSTEM\CurrentControlSet\services\Dynamics Server\6.0" )
+    $script:ClientRegistryPath       = (Set-Parameter "ClientRegistryPath" "HKCU:\SOFTWARE\Microsoft\Dynamics\6.0\Configuration" )
+    $script:labelsFolder             = (Set-Parameter "LabelsFolder" "label files" )#>
+}
+
+function Get-DefaultParameters
+{
     $script:CompileCILTimeout        = [int](Set-Parameter "CompileCILTimeout" "60" )
     $script:SyncTimeout              = [int](Set-Parameter "SyncTimeout" "60" )
     $script:ImportTimeout            = [int](Set-Parameter "ImportTimeout" "60" )
@@ -368,18 +382,21 @@ function Read-AXClientConfiguration
     $Path = $clientRegistryPath 
     Write-Output "Path: $path"
 	$Path = Join-Path $Path (Get-ItemProperty (get-item ($Path)).PSPath).Current
+    Write-Output "Current configuration: $path"
 	$script:clientBinDir = (Get-ItemProperty (get-item ($Path)).PSPath).bindir.TrimEnd('\')
 	$script:clientLogDir = (Get-ItemProperty (get-item ($Path)).PSPath).logdir.TrimEnd('\')
+    $script:AxAOS 	  	 = (Get-ItemProperty (get-item ($Path)).PSPath).aos2
+	$script:clientLogDir = [System.Environment]::ExpandEnvironmentVariables("$clientLogDir")    
+	$script:clientBinDir = [System.Environment]::ExpandEnvironmentVariables("$clientBinDir")    
+    $script:ax32  = join-path $clientBinDir "ax32.exe"
+    
+    Write-Output "Client log folder: $script:clientLogDir"
     if ($script:LogFolder -eq $null -or [string]::IsNullOrEmpty($script:LogFolder))
     {
         # Override with active AX configuration log placement in case not defined
         $script:LogFolder = $script:clientLogDir
     }
-	$script:AxAOS 	  	 = (Get-ItemProperty (get-item ($Path)).PSPath).aos2
-	$script:clientLogDir = [System.Environment]::ExpandEnvironmentVariables("$clientLogDir")    
-	$script:clientBinDir = [System.Environment]::ExpandEnvironmentVariables("$clientBinDir")    
-    $script:ax32  = join-path $clientBinDir "ax32.exe"
-    
+
     $parts = ($AxAOS.Split(';')[0]).Split('@')
     if($parts.Length -eq 2)
     {
@@ -431,6 +448,19 @@ function Read-AxServerConfiguration
         	        	                    (Get-ItemProperty (get-item ($Path)).PSPath).application 
                     $script:AxAOSServerName = $AxAOSServerName
                     $script:axBuild = Join-Path $serverBinDir "AXBuild.exe"
+
+                    if ($script:scriptName -eq 'DEPLOY')
+                    {
+                        if ($script:ApplicationSourceDir -eq $null -or [string]::isNullOrEmpty($script:ApplicationSourceDir))
+                        {
+                            $local:systemName = GetEnvironmentVariable("SystemName")
+                            $script:ApplicationSourceDir = Join-Path $script:ServerBinDir "Application\$local:systemName"
+                            if ((Test-Path $script:ApplicationSourceDir) -ne $true)
+                            {
+                                New-Item -Path $script:ApplicationSourceDir -ItemType Directory -Confirm
+                            }
+                        }
+                    }
                     
                     break #Break once we've found the matching AOS server
                 }

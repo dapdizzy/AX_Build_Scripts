@@ -478,6 +478,7 @@ try
     $script:transcriptStarted = $true
     Start-Transcript (join-path $currentLogFolder 'BuildLogs.log')  
 
+    Get-DefaultParameters
     Get-OverrideParameters
     Get-ImportOverrideParameters
     #Load the AX PS libary

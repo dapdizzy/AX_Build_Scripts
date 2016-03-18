@@ -1,2 +1,5 @@
 /BuildScripts.rar
 /version.txt
+
+/BuildScripts/Log*
+/BuildScripts/BuildLog*

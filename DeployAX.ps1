@@ -69,6 +69,7 @@ function Get-InputVariables ($homePath, $fileName = "DeployParameters.txt")
     {
         # Override the value with the latest successful build folder found
         $script:dropLocation = (Get-LastSuccessfulBuild $script:dropLocation).FullName
+        Write-Output "Deploting build $(Split-Path -Path $script:dropLocation -Leaf)"
     }
     if ($script:ServerBinDir -eq $null -or [string]::isNullOrEmpty($script:serverBinDir))
     {
@@ -91,7 +92,7 @@ function Get-InputVariables ($homePath, $fileName = "DeployParameters.txt")
     $script:TFSUrl                  = GetEnvironmentVariable("TFSUrl")
     $script:TFSLabel                = GetEnvironmentVariable("TFSLabel")
     $script:ApplicationSourceDir    = GetEnvironmentVariable("ApplicationSourceDir")
-    if ($script:ApplicationSourceDir -eq $null -or [string]::isNullOrEmpty($script:ApplicationSourceDir))
+    <#if ($script:ApplicationSourceDir -eq $null -or [string]::isNullOrEmpty($script:ApplicationSourceDir))
     {
         $local:systemName = GetEnvironmentVariable("SystemName")
         $script:ApplicationSourceDir = Join-Path $script:ServerBinDir "Application\$local:systemName"
@@ -99,7 +100,7 @@ function Get-InputVariables ($homePath, $fileName = "DeployParameters.txt")
         {
             New-Item -Path $script:ApplicationSourceDir -ItemType Directory -Confirm
         }
-    }
+    }#>
     $script:CleanOnly               = GetEnvironmentVariable("UninstallOnly")
     $script:AOSNotOnDeployBox       = GetEnvironmentVariable("AOSNotOnDeployBox")
     $script:NoCleanOnError          = GetEnvironmentVariable("NoCleanOnError")
@@ -296,46 +297,92 @@ $script:scriptName = 'DEPLOY'
 try
 {   
     $ErrorActionPreference = "Stop"
+
     #Check-PowerShellVersion
     #Step 
     #Read environment variables comming from the build template (or the parm file)
     Get-InputVariables(Split-Path -Parent $MyInvocation.MyCommand.Path)
     
-    if($logFolder -eq $null -or (Test-path $logFolder) -eq $false)
+    <#if($logFolder -eq $null -or (Test-path $logFolder) -eq $false)
     {
         Write-TerminatingErrorLog "Log folder is not a valid path."
-    }
+    }#>
     
     Write-InfoLog ("Deploy Starting : {0}" -f (Get-Date)) 
 
-    Write-InfoLog ("Creating output directories : {0}" -f (Get-Date)) 
-    Create-CurrentLogFolder
+    <#Write-InfoLog ("Creating output directories : {0}" -f (Get-Date)) 
+    Create-CurrentLogFolder#>
 }
 catch
 {
+    Write-ErrorLog "Stack trace:`n$StackTrace"
     Write-TerminatingErrorLog "Error occured while deploying." $Error[0]
 }
     
 try
 {   
-    $script:transcriptStarted = $true
-    Start-Transcript (join-path $currentLogFolder 'DeployLogs.log')
+    <#$script:transcriptStarted = $true
+    Start-Transcript (join-path $currentLogFolder 'DeployLogs.log')#>
+
+    Get-DefaultParameters
+
+    Read-AXClientConfiguration
+    Write-Output "Read client configuration"
+    if($AOSNotOnDeployBox -ne $True)
+    {
+        Read-AxServerConfiguration
+    }
+
+    Write-Output "Read client/server configurations"
+
+    if(($logFolder -eq $null) -or (Test-path $logFolder) -eq $false)
+    {
+        Write-TerminatingErrorLog "Log folder is not a valid path."
+    }
+
+    Write-InfoLog ("Creating output directories : {0}" -f (Get-Date)) 
+    Create-CurrentLogFolder
 
     Get-OverrideParameters
     Get-ImportOverrideParameters
+
+    <#if($logFolder -eq $null -or (Test-path $logFolder) -eq $false)
+    {
+        Write-TerminatingErrorLog "Log folder is not a valid path."
+    }#>
+
     #Load the AX PS libary
     $x = . (join-path (join-path (Get-Item $SetupRegistryPath).GetValue("InstallDir") "ManagementUtilities") "Microsoft.Dynamics.ManagementUtilities.ps1")
     
     #Step
     #Read the AX information from the registry
     Update-InputVariables
-    Read-AXClientConfiguration
+    <#Read-AXClientConfiguration
     if($AOSNotOnDeployBox -ne $True)
     {
         Read-AxServerConfiguration
-    }
+    }#>
+
+    #$script:transcriptStarted = $true
+    <#Start-Transcript (join-path $currentLogFolder 'DeployLogs.log')
+    $script:transcriptStarted = $true
+
+    Write-InfoLog ('Printing all variables')
+    Write-InfoLog (Get-Variable)#>
+
+    <#if($logFolder -eq $null -or (Test-path $logFolder) -eq $false)
+    {
+        Write-TerminatingErrorLog "Log folder is not a valid path."
+    }#>
+
+    Write-InfoLog ("Creating output directories : {0}" -f (Get-Date)) 
+    Create-CurrentLogFolder
+
     Write-InfoLog ('Printing all variables')
     Write-InfoLog (Get-Variable)
+
+    Start-Transcript (join-path $currentLogFolder 'DeployLogs.log')
+    $script:transcriptStarted = $true
     
     #Step 4
     if ((Validate-InputVariables) -eq $null)
@@ -371,6 +418,7 @@ try
 }
 catch
 {
+    Write-ErrorLog "Stack trace:`n$StackTrace"
     Write-ErrorLog ("Error occured while deploying.")
     Write-ErrorLog ($Error[0])
     
