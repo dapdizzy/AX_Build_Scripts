@@ -1,0 +1,15 @@
+ApplicationSourceDir=C:\Program Files\Microsoft Dynamics AX\60\Server\LIPS_BUILD\bin\Application\LIPS
+BackupModelStoreFolder=C:\AX\Build\Backup
+CleanBackupFileName=C:\AX\Build\Backup\AXR3.bak
+CleanupAfterBuild=true
+CompileAll=true
+CompileCIL=true
+DropLocation=C:\AX\Build\Drop\Lips
+LabelComments=LIPS Build-{0}
+MsBuildDir=C:\Program Files (x86)\MSBuild\12.0\Bin
+NoCleanOnError=true
+TFSIntegration=true
+TFSLabelPrefix=LIPS-{0}
+TFSUrl=https://mediamarkt.visualstudio.com/defaultcollection
+TFSWorkspace=$/LIPS/LIPS
+VCSFilePath=C:\Program Files\Microsoft Dynamics AX\60\Server\LIPS_BUILD\bin\Application\LIPS\Definition\VCSDef.xml

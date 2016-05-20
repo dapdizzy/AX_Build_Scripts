@@ -1,0 +1,28 @@
+<xml>
+<type>Class</type><name>SysImportElements</name><path>\\Classes\SysImportElements</path>
+
+<type>Class</type><name>SysStartupCmdAOTImport</name><path>\\Classes\SysStartupCmdAOTImport</path>
+
+<type>Class</type><name>SysStartupCmdCompilePartial</name><path>\\Classes\SysStartupCmdCompilePartial</path>
+
+<type>View</type><name>MMS_TransportVolumesView_Detail</name><path>\\Data Dictionary\Views\MMS_TransportVolumesView_Detail</path>
+
+<type>View</type><name>MMS_LWOTableTotals</name><path>\\Data Dictionary\Views\MMS_LWOTableTotals</path>
+
+<type>View</type><name>MMS_LWOPerformanceMonitor</name><path>\\Data Dictionary\Views\MMS_LWOPerformanceMonitor</path>
+
+<type>View</type><name>MMS_LWODelayedStatus</name><path>\\Data Dictionary\Views\MMS_LWODelayedStatus</path>
+
+<type>View</type><name>MMS_LRByIncidentView</name><path>\\Data Dictionary\Views\MMS_LRByIncidentView</path>
+
+<type>View</type><name>MMS_LogisticsAddressCountyCity</name><path>\\Data Dictionary\Views\MMS_LogisticsAddressCountyCity</path>
+
+<type>View</type><name>MMS_LeadTimeExportImportHeader</name><path>\\Data Dictionary\Views\MMS_LeadTimeExportImportHeader</path>
+
+<type>View</type><name>MMS_LeadTimeExportImport</name><path>\\Data Dictionary\Views\MMS_LeadTimeExportImport</path>
+
+<type>View</type><name>MMS_IncidentSum</name><path>\\Data Dictionary\Views\MMS_IncidentSum</path>
+
+<type>View</type><name>MMS_DeliveryStateAnalityc</name><path>\\Data Dictionary\Views\MMS_DeliveryStateAnalityc</path>
+
+</xml>

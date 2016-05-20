@@ -1,0 +1,13 @@
+MMS_TransportVolumesView_Detail
+MMS_LWOTableTotals
+MMS_LWOPerformanceMonitor
+MMS_LWODelayedStatus
+MMS_LRByIncidentView
+MMS_LogisticsAddressCountyCity
+MMS_LeadTimeExportImportHeader
+MMS_LeadTimeExportImport
+MMS_IncidentSum
+MMS_DeliveryStateAnalityc
+MMS_LogisticsAddressCityDistrict
+MMS_StockLocation
+MMS_StockLocationTranslation
